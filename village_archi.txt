@@ -27,3 +27,13 @@ main.py -jason
 auth.py - victor
 frontend - leo 
 >>>everyhting shld relate to each other in frontend page 
+
+#AUTH.PY docs 
+using tempoary dictionaries (user_db and otp-store)
+##routes
+/api/register , method = POST 
+/api/verify-otp , method = POST
+/api/login , method =POST
+updates>>update database , update otp mechanism to send to emails 
+
+nee
