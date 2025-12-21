@@ -36,4 +36,8 @@ using tempoary dictionaries (user_db and otp-store)
 /api/login , method =POST
 updates>>update database , update otp mechanism to send to emails 
 
-nee
+from auth import auth_bp
+app.register_blueprint(auth_bp)
+changes made to main.py 
+||from auth import auth_bp
+app.register_blueprint(auth_bp||

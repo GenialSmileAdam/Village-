@@ -1,6 +1,12 @@
 from flask import Flask, render_template
 from flask_wtf.csrf import CSRFProtect
 
+from auth import auth_bp
+app.register_blueprint(auth_bp)
+
+
+
+
 
 
 
