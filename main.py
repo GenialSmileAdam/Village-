@@ -2,7 +2,7 @@ from flask import Flask, render_template
 from flask_wtf.csrf import CSRFProtect
 
 from auth import auth_bp
-app.register_blueprint(auth_bp)
+
 
 
 
@@ -16,7 +16,7 @@ app = Flask(__name__)
 csrf = CSRFProtect(app)
     # -----------DATABASE CONFIGURATION --------------
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///village.db"
-
+app.register_blueprint(auth_bp)
 
 
 
