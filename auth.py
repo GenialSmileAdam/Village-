@@ -1,16 +1,52 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timedelta
 import random
+import os
+import smtplib
+from email.message import EmailMessage
 
-# Blueprint for auth routes
+from models import db, User, OTPToken
+
 auth_bp = Blueprint("auth", __name__)
 
-# In-memory storage (temporary )
-users_db = {}
-otp_store = {}
+# =========================
+# CONFIG
+# =========================
+
+OTP_EXPIRY_MINUTES = 10
+
+SMTP_HOST = "smtp.gmail.com"
+SMTP_PORT = 587
+EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
+
+# SMTP AND OTP 
+
+def send_otp_email(to_email, otp_code, purpose):
+    msg = EmailMessage()
+    msg["Subject"] = "Your Verification Code"
+    msg["From"] = EMAIL_ADDRESS
+    msg["To"] = to_email
+
+    msg.set_content(
+        f"""
+Your verification code is: {otp_code}
+
+Purpose: {purpose}
+This code expires in {OTP_EXPIRY_MINUTES} minutes.
+
+If you did not request this, ignore this email.
+        """
+    )
+
+    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+        server.starttls()    # TLS encryption
+        server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+        server.send_message(msg)
 
 
-# Register user + send OTP
+# REGISTER (SIGNUP)
 
 @auth_bp.route("/api/register", methods=["POST"])
 def register_user():
@@ -23,53 +59,79 @@ def register_user():
     if not email or not username or not password:
         return jsonify({"error": "Missing required fields"}), 400
 
-    if email in users_db:
+    if User.query.filter_by(email=email).first():
         return jsonify({"error": "User already exists"}), 409
 
-    # Hash password
     password_hash = generate_password_hash(password)
 
+    user = User(
+        email=email,
+        username=username,
+        password_hash=password_hash,
+        is_verified=False
+    )
+
+    db.session.add(user)
+    db.session.commit()
+
     # Generate OTP
-    otp_code = random.randint(100000, 999999)
+    otp_code = str(random.randint(100000, 999999))
+    otp_hash = generate_password_hash(otp_code)
 
-    # Store user temporarily
-    users_db[email] = {
-        "username": username,
-        "password": password_hash,
-        "is_verified": False
-    }
+    otp = OTPToken(
+        user_id=user.id,
+        otp_hash=otp_hash,
+        purpose="VERIFY_EMAIL",
+        expires_at=datetime.utcnow() + timedelta(minutes=OTP_EXPIRY_MINUTES)
+    )
 
-    # Store OTP temporarily
-    otp_store[email] = otp_code
+    db.session.add(otp)
+    db.session.commit()
 
- #tempoary
-    print(f"OTP for {email}: {otp_code}")
+    send_otp_email(email, otp_code, "Email Verification")
 
     return jsonify({"message": "OTP sent to email"}), 201
 
-# Verify OTP
+# VERIFY EMAIL OTP
+
 @auth_bp.route("/api/verify-otp", methods=["POST"])
-def verify_user_otp():
+def verify_email_otp():
     data = request.json
 
     email = data.get("email")
-    otp = data.get("otp")
+    otp_input = data.get("otp")
 
-    if email not in otp_store:
+    user = User.query.filter_by(email=email).first()
+
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    otp = OTPToken.query.filter_by(
+        user_id=user.id,
+        purpose="VERIFY_EMAIL",
+        used=False
+    ).order_by(OTPToken.created_at.desc()).first()
+
+    if not otp:
         return jsonify({"error": "OTP not found"}), 404
 
-    if int(otp) != otp_store[email]:
+    if otp.is_expired():
+        return jsonify({"error": "OTP expired"}), 400
+
+    if not check_password_hash(otp.otp_hash, otp_input):
+        otp.attempts += 1
+        db.session.commit()
         return jsonify({"error": "Invalid OTP"}), 400
 
-    # Mark user as verified
-    users_db[email]["is_verified"] = True
+    # Success
+    otp.used = True
+    user.is_verified = True
 
-    # Remove OTP
-    otp_store.pop(email)
+    db.session.commit()
 
     return jsonify({"message": "Account verified successfully"}), 200
 
-login 
+# LOGIN
 
 @auth_bp.route("/api/login", methods=["POST"])
 def login_user():
@@ -78,15 +140,15 @@ def login_user():
     email = data.get("email")
     password = data.get("password")
 
-    user = users_db.get(email)
+    user = User.query.filter_by(email=email).first()
 
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    if not user["is_verified"]:
+    if not user.is_verified:
         return jsonify({"error": "Account not verified"}), 403
 
-    if not check_password_hash(user["password"], password):
+    if not check_password_hash(user.password_hash, password):
         return jsonify({"error": "Invalid credentials"}), 401
 
     return jsonify({"message": "Login successful"}), 200
