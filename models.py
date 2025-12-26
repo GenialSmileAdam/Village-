@@ -29,6 +29,12 @@ user_villages = Table(
     Column("village_id", ForeignKey("village_table.id"), primary_key=True)
 )
 
+hobby_villages = Table(
+    "hobby_village_association_table",
+    Base.metadata,
+    Column("hobby_id", ForeignKey("hobby_table.id"), primary_key=True),
+    Column("village_id", ForeignKey("village_table.id"), primary_key=True)
+)
 
 
 class User(db.Model):
@@ -61,6 +67,8 @@ class Hobby(db.Model):
     # Relationships
     users :Mapped[List["User"]] = relationship(secondary=user_hobbies, back_populates="hobbies", lazy="dynamic")
 
+    villages: Mapped[List['Village']] = relationship(secondary=hobby_villages, back_populates="hobbies", lazy="dynamic")
+
     def __repr__(self):
         return f"Hobby {self.name}"
 
@@ -87,8 +95,9 @@ class Village(db.Model):
     name: Mapped[str] = mapped_column(unique=True)
 
 #     Relationships
-#     users: Mapped[List["User"]] = relationship(back_populates="location")
     users: Mapped[List['User']] = relationship(secondary=user_villages, back_populates="villages", lazy="dynamic")
+
+    hobbies: Mapped[List['Hobby']] = relationship(secondary=hobby_villages, back_populates="villages", lazy="dynamic")
 
     location_id: Mapped[int] = mapped_column(ForeignKey("location_table.id"))
     location: Mapped["Location"] = relationship(back_populates="villages")
