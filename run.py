@@ -1,6 +1,5 @@
 """Development Server entry point"""
 
-import os
 
 from myapp import create_app
 
@@ -12,18 +11,35 @@ if __name__ == "__main__":
 
 """
 # how to use app, run these lines of code in your terminal or git bash
-# Create virtual environment
+
+# Create virtual environment (recommended)
 python -m venv venv
 
-# Activate (Linux/Mac)
-source venv/bin/activate
-
-# Activate (Windows)
+# Activate it:
+# Windows:
 venv\Scripts\activate
 
-# Install dependencies
-pip install flask flask-sqlalchemy flask-login flask-wtf flask-migrate python-dotenv
+# Mac/Linux:
+source venv/bin/activate
 
-# Save requirements
-pip freeze > requirements.txt
+# You should see (venv) in terminal prompt
+
+# Make sure venv is activated, then:
+pip install -r requirements.txt
+
+# Create a .env file in project root
+# (You should use the .env.example template to create yours)
+
+
+
+# Initialize database
+flask init-db  
+
+# Method 1: Using run.py (if you have it)
+python run.py
+
+# Method 2: Using Flask CLI
+flask run
+
+# The app will be at: http://localhost:5000
 """
