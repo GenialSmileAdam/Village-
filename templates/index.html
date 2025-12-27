@@ -28,8 +28,8 @@
             <div class="nav-links">
                 <a href="#features">Features</a>
                 <a href="#about">About</a>
-                <a href="{{ url_for('login')}}" class="btn-secondary">Sign In</a>
-                <a href="{{ url_for('signup') }}" class="btn-primary">Get Started</a>
+                <a href="{{ url_for('main.login')}}" class="btn-secondary">Sign In</a>
+                <a href="{{ url_for('main.signup') }}" class="btn-primary">Get Started</a>
                 <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
                     <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5"/>
@@ -58,7 +58,7 @@
                 </h1>
                 <p class="hero-subtitle">Connect with communities that matter. Share ideas, collaborate, and grow together in spaces built around your passions.</p>
                 <div class="hero-buttons">
-                    <a href="{{ url_for('signup')}}" class="btn-large btn-primary">Join Village</a>
+                    <a href="{{ url_for('main.signup')}}" class="btn-large btn-primary">Join Village</a>
                     <a href="#features" class="btn-large btn-outline">Learn More</a>
                 </div>
             </div>
@@ -128,7 +128,7 @@
             <div class="cta-content">
                 <h2>Ready to Find Your Village?</h2>
                 <p>Join thousands of people connecting through shared interests and passions.</p>
-                <a href="{{ url_for('signup')}}" class="btn-large btn-primary">Get Started Free</a>
+                <a href="{{ url_for('main.signup')}}" class="btn-large btn-primary">Get Started Free</a>
             </div>
         </section>
     </main>

@@ -1,16 +1,7 @@
 from sqlalchemy import ForeignKey, Column, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
-
-
-class Base(DeclarativeBase):
-  pass
-
-db = SQLAlchemy(model_class=Base)
-
-
+from .extensions import db, Base
 
 
 
@@ -109,7 +100,21 @@ class Village(db.Model):
 
 
 
+def add_test_data():
 
+# inserting data for test cases
+    with app.app_context():
+        for i in range(1,20):
+            user = User(username= f"user{i}",
+                        email= f"user{i}@gmail.com",
+                        biography= "generic ass bio.",
+                        profile_picture = "https://i.pinimg.com/736x/fa/d5/e7/fad5e79954583ad50ccb3f16ee64f66d.jpg")
+            db.session.add(user)
+
+        for i in range(1, 3):
+            hobby = Hobby(name=f"hobby{i}")
+            db.session.add(hobby)
+        db.session.commit()
 
 
 
