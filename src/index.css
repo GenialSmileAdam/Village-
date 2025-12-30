@@ -1,1 +1,175 @@
 @import "tailwindcss";
+
+
+:root {
+    --text-h1: var(--text-h1-sm);
+    --text-h2: var(--text-h2-sm);
+    --text-body: var(--text-body-sm);
+    --text-sub: var(--text-sub-sm);
+    --space-margin: var(--space-margin-sm);
+}
+
+@media (min-width: 768px) {
+    :root {
+        --text-h1: var(--text-h1-lg);
+        --text-h2: var(--text-h2-lg);
+        --text-body: var(--text-body-lg);
+        --text-sub: var(--text-sub-lg);
+        --space-margin: var(--space-margin-lg);
+    }
+}
+
+
+@theme {
+
+    --color-primary: #DCAD4E;
+    --color-secondary: #FBCF3D;
+    --color-text-primary: #444444;
+    --color-text-secondary: #757575;
+    --color-background-secondary: #FFF8E1;
+    --color-background-0: #F8F2CA;
+    --color-background-50: #F5EBD3;
+    --color-background-100: #FFF0A6;
+    --color-white: #FFFFFF;
+
+
+    --font-base: Poppins, system-ui, sans-serif;
+    --font-secondary: McLaren, cursive;
+    --font-logo: Ribeye-Marrow, cursive;
+
+    /* ========= Font Sizes ========= */
+    /* Laptop */
+    --text-h1-lg: 46px;
+    --text-h2-lg: 30px;
+    --text-body-lg: 16px;
+    --text-sub-lg: 14.5px;
+
+    /* Mobile */
+    --text-h1-sm: 30px;
+    --text-h2-sm: 23px;
+    --text-body-sm: 14px;
+    --text-sub-sm: 13px;
+
+    /* ========= Corner Radius ========= */
+    --radius-button: 20px;
+    --radius-card: 10px;
+    --radius-nav: 5px;
+
+    /* ========= Spacing ========= */
+    /* Mobile */
+    --space-section-sm: 88px;
+    --space-cardgap-sm: 40px;
+    --space-margin-sm: 20px;
+
+    /* Laptop */
+    --space-cardgap-lg: 48px;
+    --space-margin-lg: 75px;
+
+}
+
+
+@layer base{
+    body{
+        height: 100vh;
+        background:linear-gradient(var(--color-background-0), var(--color-background-50), var(--color-background-100));
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        font-family: var(--font-base);
+    }
+
+    h1{
+        font-size: var(--text-h1);
+
+    }
+
+    h2{
+        font-size: var(--text-h2);
+    }
+
+    h1, h2{
+        font-family: var(--font-secondary);
+        color: var(--color-primary);
+        -webkit-text-stroke-width: 1px;
+        -webkit-text-stroke-color: black;
+    }
+
+    p,a{
+        font-size: var(--text-body);
+        color: var(--color-text-primary);
+    }
+
+    section{
+        @apply px-[var(--space-margin)];
+
+
+    }
+
+    nav>ul>li>a{
+        color: var(--color-primary);
+        font-weight: 300;
+
+    }
+
+}
+
+@layer components{
+    .button--primary{
+        background-color: var(--color-secondary);
+        padding: 8px 40px;
+        border-radius: var(--radius-button);
+        border: black solid 1px;
+        font-family: var(--font-secondary);
+        cursor: pointer;
+        color: black;
+    }
+
+    .logo{
+        font-family: var(--font-logo);
+        font-size: var(--text-body) ;
+    }
+    .subtitle{
+        font-size: var(--text-sub);
+        color: var(--color-text-secondary);
+        text-align: center;
+    }
+
+    .card{
+        height: 312px;
+        width: 300px;
+        border-radius: 10px;
+        background-color: var(--color-secondary);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 1.5em;
+        gap: 10px;
+        margin-top: 2rem;
+    }
+
+    .cta{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--color-background-secondary);
+        padding: 2em 1em;
+        width: 90%;
+        margin: auto;
+        border-radius: 1rem;
+        text-align: center;
+    }
+}
+
+@layer utilities {
+    .flex-center {
+        @apply flex justify-center items-center;
+    }
+
+    .section-space{
+        @apply mt-[var(--space-section-sm)];
+    }
+
+
+
+}
