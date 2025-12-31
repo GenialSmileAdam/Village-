@@ -1,16 +1,19 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField,SubmitField,EmailField, PasswordField, BooleanField
-from wtforms.validators import DataRequired,Email
+from wtforms.validators import DataRequired,Email, Length, EqualTo
 
 # A RegisterForm to register new users
 
 class RegisterForm(FlaskForm):
-    full_name = StringField("Full Name",validators=[DataRequired()])
-    username = StringField("Username" , validators=[DataRequired()])
+    full_name = StringField("Full Name",validators=[DataRequired(),Length(min=2, max=70) ])
+    username = StringField("Username" , validators=[DataRequired(),Length(min=2, max=50)])
     email = EmailField("Email" , validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[DataRequired()])
-    confirm_password = PasswordField("Confirm Password", validators=[DataRequired()])
-    agree_to_terms = BooleanField("I agree to the Terms of Service and Privacy Policy")
+    confirm_password = PasswordField("Confirm Password", validators=[DataRequired(),
+                                                                     EqualTo("password",
+                                                                     message="Passwords must match")])
+    agree_to_terms = BooleanField("I agree to the Terms of Service and Privacy Policy",
+                                  validators=[DataRequired(message="You must agree to the terms and conditions to continue") ])
     submit = SubmitField("Create Account")
 
 # A LoginForm to login existing users

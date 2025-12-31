@@ -4,6 +4,7 @@ from .extensions import db
 from .config import config
 from dotenv import load_dotenv
 from pathlib import Path
+import click
 
 load_dotenv()
 
@@ -22,6 +23,15 @@ def create_app(config_name=None):
     #Load Configuration
     app.config.from_object(config[config_name])
 
+    # Register the init-db command
+    @app.cli.command("init-db")
+    def init_db_command():
+        """Clear existing data and create new tables"""
+        from .models import db
+
+        with app.app_context():
+            db.create_all()
+        click.echo("Initialized the database")
     # initialize extensions
     from .extensions import db
     db.init_app(app)
