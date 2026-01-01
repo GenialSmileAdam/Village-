@@ -1,12 +1,14 @@
 @import "tailwindcss";
 
 
+
 :root {
     --text-h1: var(--text-h1-sm);
     --text-h2: var(--text-h2-sm);
     --text-body: var(--text-body-sm);
     --text-sub: var(--text-sub-sm);
     --space-margin: var(--space-margin-sm);
+    --space-padding: var(--space-section-sm);
 }
 
 @media (min-width: 768px) {
@@ -16,6 +18,7 @@
         --text-body: var(--text-body-lg);
         --text-sub: var(--text-sub-lg);
         --space-margin: var(--space-margin-lg);
+        --space-padding: var(--space-section-lg);
     }
 }
 
@@ -64,7 +67,7 @@
     /* Laptop */
     --space-cardgap-lg: 48px;
     --space-margin-lg: 75px;
-
+    --space-section-lg:120px
 }
 
 
@@ -97,24 +100,12 @@
     }
 
     section{
-        @apply px-[var(--space-margin)];
+        @apply px-(--space-margin);
 
 
     }
 
-    .nav-links>li>a{
-        color: black;
-        font-weight: 400;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    }
-
-
-    .nav-links > li > a:hover {
-        color: var(--color-primary);
-        transform: translateY(-2px) scale(1.25);
-        text-shadow: 0 2px 8px rgba(220, 173, 78, 0.3);
-    }
 }
 
 @layer components{
@@ -131,7 +122,7 @@
     .button--primary:hover {
         transform: translateY(-3px);
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-        background-color: #f0b926; /* Slightly darker shade */
+        background-color: #f0b926;
     }
 
     .button--primary:active {
@@ -142,7 +133,7 @@
 
 
     .Logo{
-        font-family: var(--font-logo);
+        font-family: var(--font-logo), serif;
     }
     .subtitle{
         font-size: var(--text-sub);
@@ -185,7 +176,49 @@
     }
 
     .section-space{
-        @apply mt-[var(--space-section-sm)];
+        @apply mt-(--space-padding);
+    }
+
+
+    .nav-links > li > a,
+    .login {
+        color: black;
+        font-weight: 400;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-block; /* Required for transform to work */
+    }
+
+    .nav-links > li > a:hover,
+    .login:hover {
+        color: var(--color-primary);
+        transform: translateY(-2px) scale(1.05); /* scale(1.25) is too much */
+        text-shadow: 0 2px 8px rgba(220, 173, 78, 0.3);
+    }
+
+    /* Add active state */
+    .nav-links > li > a.active {
+        color: var(--color-primary);
+        font-weight: 500;
+    }
+
+    /* Optional: Add underline animation */
+    .nav-links > li > a {
+        position: relative;
+    }
+
+    .nav-links > li > a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -4px;
+        left: 0;
+        background-color: var(--color-primary);
+        transition: width 0.3s ease;
+    }
+
+    .nav-links > li > a:hover::after {
+        width: 100%;
     }
 
     .floating-icons {
@@ -194,7 +227,6 @@
         left: 0;
         width: 100%;
         height: 100%;
-        pointer-events: none; /* Allow clicks through icons */
     }
 
     .floating-icons .icon {
@@ -226,7 +258,7 @@
     }
 
     .icon-4 {
-        top: 60%;
+        top: 50%;
         right: 10%;
         animation: floatIcon 22s infinite ease-in-out reverse;
     }
@@ -255,21 +287,21 @@
 
         .icon-1 {
             top: 15%;
-            left: 15%;
+            left: 10%;
         }
 
         .icon-2 {
-            top: 40%;
-            right: 20%;
+            top: 35%;
+            right: 10%;
         }
 
         .icon-3 {
             bottom: 20%;
-            left: 25%;
+            left: 20%;
         }
 
         .icon-4 {
-            top: 65%;
+            top: 69%;
             right: 30%;
         }
 
@@ -279,37 +311,12 @@
         }
 
         .icon-6 {
-            bottom: 45%;
+            bottom: 50%;
             right: 40%;
         }
     }
 
-    /* Large desktop */
-    @media (min-width: 1280px) {
-        .icon-1 {
-            left: 20%;
-        }
 
-        .icon-2 {
-            right: 25%;
-        }
-
-        .icon-3 {
-            left: 30%;
-        }
-
-        .icon-4 {
-            right: 35%;
-        }
-
-        .icon-5 {
-            left: 40%;
-        }
-
-        .icon-6 {
-            right: 45%;
-        }
-    }
 
     /* Animation - keep this the same */
     @keyframes floatIcon {
@@ -338,4 +345,35 @@
         }
     }
 
+    .hero-gradient-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background:
+                radial-gradient(
+                        circle at 20% 80%,
+                        rgba(220, 173, 78, 0.4) 0%,
+                        transparent 50%
+                ),
+                radial-gradient(
+                        circle at 80% 20%,
+                        rgba(251, 207, 61, 0.3) 0%,
+                        transparent 50%
+                ),
+                radial-gradient(
+                        circle at 40% 40%,
+                        rgba(248, 242, 202, 0.2) 0%,
+                        transparent 50%
+                );
+        background-size: 200% 200%;
+        animation: gradientShift 15s ease infinite;
+    }
+
+    @keyframes gradientShift {
+        0% { background-position: 0% 0%; }
+        50% { background-position: 100% 100%; }
+        100% { background-position: 0% 0%; }
+    }
 }

@@ -6,6 +6,7 @@ import {FaHome} from "react-icons/fa";
 function Hero(){
     return(
         <section className="h-[370px] flex flex-col justify-center items-start gap-3 overflow-hidden lg:h-[90vh]">
+            <div className="hero-gradient-bg"></div>
             <div className="floating-icons overflow-hidden">
                 <FaUsers className="icon icon-1" />
                 <FaHeart className="icon icon-2" />
