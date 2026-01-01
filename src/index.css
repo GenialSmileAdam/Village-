@@ -69,11 +69,9 @@
 
 
 @layer base{
-    body{
-        height: 100vh;
+    main{
         background:linear-gradient(var(--color-background-0), var(--color-background-50), var(--color-background-100));
         background-attachment: fixed;
-        background-repeat: no-repeat;
         font-family: var(--font-base);
     }
 
@@ -104,12 +102,19 @@
 
     }
 
-    nav>ul>li>a{
-        color: var(--color-primary);
-        font-weight: 300;
+    .nav-links>li>a{
+        color: black;
+        font-weight: 400;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     }
 
+
+    .nav-links > li > a:hover {
+        color: var(--color-primary);
+        transform: translateY(-2px) scale(1.25);
+        text-shadow: 0 2px 8px rgba(220, 173, 78, 0.3);
+    }
 }
 
 @layer components{
@@ -123,9 +128,21 @@
         color: black;
     }
 
-    .logo{
+    .button--primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        background-color: #f0b926; /* Slightly darker shade */
+    }
+
+    .button--primary:active {
+        transform: translateY(-1px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+
+
+
+    .Logo{
         font-family: var(--font-logo);
-        font-size: var(--text-body) ;
     }
     .subtitle{
         font-size: var(--text-sub);
@@ -135,7 +152,8 @@
 
     .card{
         height: 312px;
-        width: 300px;
+        width: 100%;
+        max-width: 600px;
         border-radius: 10px;
         background-color: var(--color-secondary);
         display: flex;
@@ -170,6 +188,154 @@
         @apply mt-[var(--space-section-sm)];
     }
 
+    .floating-icons {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none; /* Allow clicks through icons */
+    }
 
+    .floating-icons .icon {
+        position: absolute;
+        color: rgba(220, 173, 78, 0.15);
+        opacity: 0.7;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        transition: opacity 0.3s ease;
+        font-size: 3rem;
+    }
+
+    /* Mobile positions (default) */
+    .icon-1 {
+        top: 10%;
+        left: 5%;
+        animation: floatIcon 20s infinite ease-in-out;
+    }
+
+    .icon-2 {
+        top: 15%;
+        right: 5%;
+        animation: floatIcon 25s infinite ease-in-out reverse;
+    }
+
+    .icon-3 {
+        bottom: 20%;
+        left: 10%;
+        animation: floatIcon 30s infinite ease-in-out;
+    }
+
+    .icon-4 {
+        top: 60%;
+        right: 10%;
+        animation: floatIcon 22s infinite ease-in-out reverse;
+    }
+
+    .icon-5 {
+        top: 30%;
+        left: 15%;
+        animation: floatIcon 28s infinite ease-in-out;
+    }
+
+    .icon-6 {
+        bottom: 40%;
+        right: 15%;
+        animation: floatIcon 35s infinite ease-in-out reverse;
+    }
+
+
+
+    /* Desktop positions */
+    @media (min-width: 1024px) {
+        .floating-icons .icon {
+            color: rgba(220, 173, 78, 0.25);
+            opacity: 0.7;
+            font-size: 4rem;
+        }
+
+        .icon-1 {
+            top: 15%;
+            left: 15%;
+        }
+
+        .icon-2 {
+            top: 40%;
+            right: 20%;
+        }
+
+        .icon-3 {
+            bottom: 20%;
+            left: 25%;
+        }
+
+        .icon-4 {
+            top: 65%;
+            right: 30%;
+        }
+
+        .icon-5 {
+            top: 35%;
+            left: 35%;
+        }
+
+        .icon-6 {
+            bottom: 45%;
+            right: 40%;
+        }
+    }
+
+    /* Large desktop */
+    @media (min-width: 1280px) {
+        .icon-1 {
+            left: 20%;
+        }
+
+        .icon-2 {
+            right: 25%;
+        }
+
+        .icon-3 {
+            left: 30%;
+        }
+
+        .icon-4 {
+            right: 35%;
+        }
+
+        .icon-5 {
+            left: 40%;
+        }
+
+        .icon-6 {
+            right: 45%;
+        }
+    }
+
+    /* Animation - keep this the same */
+    @keyframes floatIcon {
+        0%, 100% {
+            transform: translate(0, 0) rotate(0deg) scale(1);
+        }
+        33% {
+            transform: translate(30px, 40px) rotate(120deg) scale(1.1);
+        }
+        66% {
+            transform: translate(-25px, 20px) rotate(240deg) scale(0.9);
+        }
+    }
+
+    /* Reduce animation on mobile for performance */
+    @media (max-width: 768px) {
+        .floating-icons .icon {
+            animation-duration: 30s !important; /* Slower on mobile */
+        }
+
+        /* Reduce number of icons on very small screens */
+        @media (max-width: 480px) {
+            .icon-5, .icon-6 {
+                display: none;
+            }
+        }
+    }
 
 }

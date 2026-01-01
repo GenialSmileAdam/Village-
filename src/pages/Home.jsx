@@ -1,11 +1,20 @@
 import village from "/imgs/village.jpg"
 import Card from "../components/Card.jsx"
-import { FaMapLocationDot } from "react-icons/fa6";
-
+import { FaMapLocationDot, FaUsers, FaStar, FaTrophy, FaHeart, FaTree, FaSeedling} from "react-icons/fa6";
+import {FaHome} from "react-icons/fa";
 
 function Hero(){
     return(
         <section className="h-[370px] flex flex-col justify-center items-start gap-3 overflow-hidden lg:h-[90vh]">
+            <div className="floating-icons overflow-hidden">
+                <FaUsers className="icon icon-1" />
+                <FaHeart className="icon icon-2" />
+                <FaHome className="icon icon-3" />
+                <FaTree className="icon icon-4" />
+                <FaSeedling className="icon icon-5" />
+                <FaUsers className="icon icon-6" />
+            </div>
+
             <h1>Find your people, <br/> Find your village</h1>
             <p>Join a community where you find people <br/> with your similar interests </p>
             <button className="button--primary mt-5">Join a Village!</button>
@@ -16,7 +25,7 @@ function Hero(){
 
 function About(){
     return(
-        <section>
+        <section id="about">
             <h2>About Village</h2>
             <div className="lg:flex justify-aroundt gap-3 lg:pt-5">
 
@@ -38,10 +47,25 @@ function Features(){
             <h2>Features</h2>
             <p className="mt-3">What makes Villages different from other communities.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-4">
-                <Card name="Local People Finder" description="You can be able to socialize with people that are with a certain range from you"/>
-                <Card/>
-                <Card/>
-                <Card/>
+                <Card
+                    icon={<FaMapLocationDot className="text-6xl text-green-600" />}
+                    title="Local People Finder"
+                    description="You can be able to socialize with people that are with a certain range from you"/>
+                <Card
+                    icon={<FaUsers className="text-6xl text-green-600" />}
+                    title="Interest Groups"
+                    description="Join local groups based on hobbies, professions, or passions. From book clubs to hiking teams"
+                />
+                <Card
+                    icon={<FaTrophy className="text-6xl text-yellow-600" />}
+                    title="Community Rewards"
+                    description="Earn badges and rewards for being active, organizing events, and helping neighbors"
+                />
+                <Card
+                    icon={<FaStar className="text-6xl text-amber-600" />}
+                    title="Local Guides"
+                    description="Crowdsourced recommendations for best cafes, parks, doctors, and services in your area"
+                />
             </div>
 
         </section>
@@ -50,7 +74,7 @@ function Features(){
 
 function CTA(){
     return(
-        <section className="section-space cta lg:w-1/2">
+        <section className="section-space cta lg:w-1/2 "> {/* Add mb-12 */}
             <h2>Ready to Find Your Village?</h2>
             <p className="mt-3">Join Thousands of people connecting through shared interests and passions</p>
             <button className="button--primary mt-5">Join a Village!</button>
@@ -60,13 +84,13 @@ function CTA(){
 
 export default function Home() {
     return (
-        <body>
+        <main className="flex-grow pb-12">
             <Hero/>
             <div className="bg-background-secondary rounded-card py-5">
                 <About/>
                 <Features/>
             </div>
             <CTA/>
-        </body>
+        </main>
     )
 }
