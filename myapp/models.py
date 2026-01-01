@@ -2,6 +2,7 @@ from sqlalchemy import ForeignKey, Column, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List, Optional
 from .extensions import db, Base
+from flask_login import UserMixin
 
 
 
@@ -28,7 +29,7 @@ hobby_villages = Table(
 )
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = "user_table"
 
     id: Mapped[int] = mapped_column(primary_key=True)

@@ -1,4 +1,5 @@
 from flask import render_template, Blueprint, request, url_for, redirect, flash
+from .extensions import login_manager
 from .models import db, User, Hobby
 from .forms import RegisterForm, LoginForm
 from sqlalchemy import exists
@@ -7,6 +8,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 main_bp = Blueprint('main',__name__)
+login_manager.login_view = "main.login"
+
+
+# Load a user
+@login_manager.user_loader
+def load_user(user_id):
+    return  db.session.scalar(db.select(User).where(User.id == user_id) )
+
 
 # ---------Main Routes-------------
 @main_bp.route("/")
@@ -19,6 +28,10 @@ def chat():
 
 @main_bp.route("/login")
 def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        pass
+
     return render_template("login.html")
 
 
@@ -50,10 +63,10 @@ def create_user(form):
     if not user_exists:
 
         new_user = User(
-            full_name = full_name,
-            username = username,
-            email = email,
-            password = password)
+            full_name = full_name,#type:ignore
+            username = username,#type:ignore
+            email = email,#type:ignore
+            password = password)#type:ignore
 
         db.session.add(new_user)
         db.session.commit()
@@ -64,3 +77,7 @@ def create_user(form):
         flash("User already exists. Log in instead ")
         return False
 
+# def login_user(form):
+#
+#
+#     user_exists = db.session.query(exists().where((User.email == email))).scalar()

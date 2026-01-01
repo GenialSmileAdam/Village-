@@ -1,5 +1,5 @@
 import os
-from email.policy import default
+import secrets
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -11,7 +11,7 @@ basedir= Path(__file__).parent.absolute()
 class Config:
     """Base Configuration"""
     # Security
-    SECRET_KEY =os.environ.get("SECRET_KEY")
+    SECRET_KEY = secrets.token_hex()
     DEBUG = os.environ.get('FLASK_ENV') == 'development'
 
     # Database

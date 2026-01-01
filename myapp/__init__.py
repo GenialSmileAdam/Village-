@@ -33,8 +33,10 @@ def create_app(config_name=None):
             db.create_all()
         click.echo("Initialized the database")
     # initialize extensions
-    from .extensions import db
+    from .extensions import db, login_manager, csrf
     db.init_app(app)
+    csrf.init_app(app)
+    login_manager.init_app(app)
 
     # Register routes/blueprints
     from .routes import main_bp
