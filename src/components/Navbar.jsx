@@ -92,7 +92,7 @@ export default function Navbar() {
             </nav>
             <div className="hidden lg:block">
                 <Link to="/login" className="font-[500] text-black login">Login</Link>
-                <Link to="/signup" > <button className="button--primary ml-4 lg:py-1.6 px-5.5"> Create Account</button> </Link>
+                <Link to="/signup" className="button--primary ml-4 lg:py-1.6 px-5.5"> Create Account</Link>
             </div>
             <MobileMenu/>
 

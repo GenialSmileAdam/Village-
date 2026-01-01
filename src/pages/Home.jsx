@@ -5,9 +5,9 @@ import {FaHome} from "react-icons/fa";
 
 function Hero(){
     return(
-        <section className="h-[370px] flex flex-col justify-center items-start gap-3 overflow-hidden lg:h-[90vh]">
+        <section className="h-92.5 flex flex-col justify-center items-start gap-3 overflow-hidden lg:h-[90vh]">
             <div className="hero-gradient-bg"></div>
-            <div className="floating-icons overflow-hidden">
+            <div className="floating-icons">
                 <FaUsers className="icon icon-1" />
                 <FaHeart className="icon icon-2" />
                 <FaHome className="icon icon-3" />
@@ -30,13 +30,13 @@ function About(){
             <h2>About Village</h2>
             <div className="lg:flex justify-aroundt gap-3 lg:pt-5">
 
-                <img src={village} alt="picture of a village" className=" h-[250px] w-full rounded-[10px]  mt-4 border object-cover object-center lg:w-1/2 "/>
+                <img src={village} alt="picture of a village" className=" h-62.5 w-full rounded-card  mt-4 border object-cover object-center lg:w-1/2 "/>
 
                 <p className="mt-5 lg:w-1/2">
                     Village is a interactive community where people get to meet people that they share similar interests with and they all hangout in a group called “Village”.<br/><br/>
                     Village was founded in 2025 by Jason Oladipo Hughes in the basement of his mother’s house.<br/><br/>
                     Village has set a goal to help every man and woman to find a friend
-                    with their similar interest so the world dosen't get filled with gay men.</p>
+                    with their similar interest so the world doesn't get filled with gay men.</p>
             </div>
         </section>
     )
@@ -85,7 +85,7 @@ function CTA(){
 
 export default function Home() {
     return (
-        <main className="flex-grow pb-12">
+        <main className="grow pb-12">
             <Hero/>
             <div className="bg-background-secondary rounded-card py-5">
                 <About/>
