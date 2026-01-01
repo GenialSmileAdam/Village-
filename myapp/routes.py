@@ -1,8 +1,10 @@
 from flask import render_template, Blueprint, request, url_for, redirect, flash
+from flask_login import login_user, current_user, login_required, logout_user
+
 from .extensions import login_manager
 from .models import db, User, Hobby
 from .forms import RegisterForm, LoginForm
-from sqlalchemy import exists
+from sqlalchemy import exists, select
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -14,7 +16,7 @@ login_manager.login_view = "main.login"
 # Load a user
 @login_manager.user_loader
 def load_user(user_id):
-    return  db.session.scalar(db.select(User).where(User.id == user_id) )
+    return  db.session.scalar(select(User).where(User.id == user_id) )
 
 
 # ---------Main Routes-------------
@@ -26,13 +28,15 @@ def home():
 def chat():
     return render_template("chat.html")
 
-@main_bp.route("/login")
+@main_bp.route("/login", methods=["POST", "GET"])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        pass
-
-    return render_template("login.html")
+        if confirm_login(form):
+            return redirect(url_for("main.home"))
+        else:
+            return redirect(url_for("main.login"))
+    return render_template("login.html", form= form)
 
 
 @main_bp.route("/sign_up", methods= ["GET", "POST"])
@@ -49,6 +53,12 @@ def signup():
             return redirect(url_for("main.login"))
     return render_template("sign_up.html", form= form)
 
+@main_bp.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("User has been logged out")
+    return redirect(url_for("main.home"))
 
 def create_user(form):
     # User information from the form
@@ -77,7 +87,24 @@ def create_user(form):
         flash("User already exists. Log in instead ")
         return False
 
-# def login_user(form):
-#
-#
-#     user_exists = db.session.query(exists().where((User.email == email))).scalar()
+def confirm_login(form):
+    # Get user data
+    password = form.password.data
+    email = form.email.data
+    # check if user exists in database
+    user_exists = db.session.query(exists().where((User.email == email))).scalar()
+
+    if user_exists:
+        user = db.session.scalar(select(User).where(User.email == email))
+
+        if check_password_hash(user.password, password):
+            login_user(user)
+            flash(f"User {current_user.full_name} is logged in")
+            return True
+        else:
+            flash("User password is incorrect, Try again")
+            return False
+
+    else:
+        flash("User  with that email does not exist ")
+        return False

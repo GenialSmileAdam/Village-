@@ -30,8 +30,17 @@
         <div class="nav-links">
             <a href="#features">Features</a>
             <a href="#about">About</a>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('main.login')}}" class="btn-secondary"> {{ current_user.full_name }}</a>
+            <a href="{{ url_for('main.logout')}}" class="btn-secondary">Logout</a>
+
+            {% else%}
+
             <a href="{{ url_for('main.login')}}" class="btn-secondary">Sign In</a>
+            {% endif %}
+
             <a href="{{ url_for('main.signup') }}" class="btn-primary">Get Started</a>
+
             <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
                 <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                      stroke-width="2">
