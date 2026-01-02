@@ -81,6 +81,8 @@ def create_user(form):
         db.session.add(new_user)
         db.session.commit()
         flash(f"Registration Successful. Welcome to Village {full_name}")
+        login_user(new_user, remember=True)
+        flash(f"User {current_user.full_name} is logged in")
         return True
 
     else:
@@ -98,7 +100,7 @@ def confirm_login(form):
         user = db.session.scalar(select(User).where(User.email == email))
 
         if check_password_hash(user.password, password):
-            login_user(user)
+            login_user(user, remember=True)
             flash(f"User {current_user.full_name} is logged in")
             return True
         else:

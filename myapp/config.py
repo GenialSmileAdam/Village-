@@ -2,6 +2,7 @@ import os
 import secrets
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import timedelta
 
 load_dotenv()
 
@@ -25,6 +26,10 @@ class Config:
     # File uploads
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024 #16MB
     UPLOAD_FOLDER = basedir/"uploads"
+
+    # Cookies
+    REMEMBER_COOKIE_DURATION = timedelta(days=14)
+    REMEMBER_COOKIE_REFRESH_EACH_REQUEST = True
 
     # App settings
     APP_NAME = "My Flask App"
