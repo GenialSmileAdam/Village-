@@ -2,6 +2,7 @@ import village from "/imgs/village.jpg"
 import Card from "../components/Card.jsx"
 import { FaMapLocationDot, FaUsers, FaStar, FaTrophy, FaHeart, FaTree, FaSeedling} from "react-icons/fa6";
 import {FaHome} from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 function Hero(){
     return(
@@ -18,8 +19,7 @@ function Hero(){
 
             <h1>Find your people, <br/> Find your village</h1>
             <p>Join a community where you find people <br/> with your similar interests </p>
-            <button className="button--primary mt-5">Join a Village!</button>
-
+            <Link to="/signup" className="button--primary mt-5"> Join a Village!</Link>
         </section>
     )
 }
@@ -75,10 +75,10 @@ function Features(){
 
 function CTA(){
     return(
-        <section className="section-space cta lg:w-1/2 "> {/* Add mb-12 */}
+        <section className="section-space cta lg:w-1/2 "> 
             <h2>Ready to Find Your Village?</h2>
             <p className="mt-3">Join Thousands of people connecting through shared interests and passions</p>
-            <button className="button--primary mt-5">Join a Village!</button>
+            <Link to="/signup" className="button--primary mt-5"> Join a Village!</Link>
         </section>
     )
 }
