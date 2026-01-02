@@ -19,7 +19,6 @@ function Hero(){
 
             <h1>Find your people, <br/> Find your village</h1>
             <p>Join a community where you find people <br/> with your similar interests </p>
-            <Link to="/signup" className="button--primary mt-5"> Join a Village!</Link>
         </section>
     )
 }

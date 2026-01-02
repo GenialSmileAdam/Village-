@@ -75,6 +75,9 @@
     main{
         background: linear-gradient(var(--color-background-0), var(--color-background-50), var(--color-background-100)) fixed;
         font-family: var(--font-base), serif;
+        
+
+
     }
 
     h1{
@@ -98,11 +101,37 @@
         color: var(--color-text-primary);
     }
 
-    section{
+    section, .margin{
         padding-left: var(--space-margin);
-        padding-right: var(--space-margin); 
+        padding-right: var(--space-margin);
     }
 
+    .form{
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .form_input{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .form_input>label{
+        font-weight: 500;
+        font-size: var(--text-body);
+    }
+
+    .form_input> input{
+        height: 40px;
+        border-radius: 10px;
+        padding: 0px 1em;
+    }
+
+    .form_input> input[placeholder]{
+        font-size: var(--text-body);
+    }
 
 }
 
@@ -184,6 +213,17 @@
         margin-top: var(--space-padding);
     }
 
+    /* Hide login/signup yellow panel on mobile */
+    .auth-panel {
+        display: none !important;
+    }
+    
+    @media (min-width: 1024px) {
+        .auth-panel {
+            display: flex !important;
+        }
+    }
+
     /* Navigation Styles */
     .nav-links li a,
     .login {
@@ -201,8 +241,22 @@
         text-shadow: 0 2px 8px rgba(220, 173, 78, 0.3);
     }
 
+    .login_v2 {
+        display: inline-block;
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+    }
+
+    .login_v2:hover {
+        color: var(--color-primary);
+        transform: translateY(-2px);
+        text-shadow: 0 2px 8px rgba(220, 173, 78, 0.3);
+    }
+
     /* Underline animation */
-    .nav-links li a::after {
+    .nav-links li a::after,
+    .login_v2::after {
         content: '';
         position: absolute;
         width: 0;
@@ -213,7 +267,8 @@
         transition: width 0.3s ease;
     }
 
-    .nav-links li a:hover::after {
+    .nav-links li a:hover::after,
+    .login_v2:hover::after {
         width: 100%;
     }
 

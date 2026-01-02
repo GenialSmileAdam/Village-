@@ -16,12 +16,11 @@ function MobileMenu() {
         { icon: FaHome, label: 'Home', href: '/' },
         { icon: FaUsers, label: 'Communities', href: '/communities' },
         { icon: FaCalendarAlt, label: 'Events', href: '/events' },
-        { icon: FaUser, label: 'Profile', href: '/profile' },
-        { icon: FaCog, label: 'Settings', href: '/settings' },
+        { icon: FaUser, label: 'Login', href: '/login' },
     ];
 
     return (
-        <Menu as="div" className="md:hidden">
+        <Menu as="div" className="lg:hidden">
             {({ open }) => (
                 <>
                     <MenuButton className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
@@ -66,9 +65,9 @@ function MobileMenu() {
                             })}
 
                             <div className="p-4 border-t border-gray-100">
-                                <button className="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors">
-                                    Join Village
-                                </button>
+                               
+                                <Link to="/signup" className="button--primary w-full py-3 flex-center"> Join a Village!</Link>
+
                             </div>
                         </MenuItems>
                     </Transition>
@@ -79,9 +78,9 @@ function MobileMenu() {
 }
 export default function Navbar() {
     return (
-        <div className="flex justify-between items-center bg-white px-[var(--space-margin)] py-3 ">
+        <div className="flex justify-between items-center bg-white px-(--space-margin) py-3 ">
             <div>
-                <h2 className="Logo">Village </h2>
+            <Link to="/"><h2 className="Logo">Village </h2></Link>
             </div>
             <nav className="hidden lg:block ">
                 <ul className="flex-center gap-8 nav-links">
