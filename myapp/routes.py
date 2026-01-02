@@ -1,4 +1,4 @@
-from flask import render_template, Blueprint, request, url_for, redirect, flash
+from flask import render_template, Blueprint, request, url_for, redirect, flash, current_app
 from flask_login import login_user, current_user, login_required, logout_user
 
 from .extensions import login_manager
@@ -32,12 +32,20 @@ def chat():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        if confirm_login(form):
-            # if the login is successful
-            return redirect(url_for("main.home"))
-        else:
-            # if the login is Unsuccessful
-            return redirect(url_for("main.login"))
+
+        try:
+            if confirm_login(form):
+                # if the login is successful
+                return redirect(url_for("main.home"))
+            else:
+                # if the login is Unsuccessful
+                return redirect(url_for("main.login"))
+        except Exception as e:
+            flash("An error occurred. Please try again.")
+            current_app.logger.error(f"Login error: {str(e)}")
+            return render_template("login.html", form=form)
+
+
     return render_template("login.html", form= form)
 
 
@@ -46,15 +54,18 @@ def signup():
     form = RegisterForm()
 
     if form.validate_on_submit():
-        user_redirect = create_user(form)
+        try:
+            user_redirect = create_user(form)
+
+            return redirect((url_for(f"main.{user_redirect}")))
 
 
-        if user_redirect == "home":
-            return redirect(url_for("main.home"))
-        elif user_redirect == "signup":
-            return redirect(url_for("main.signup"))
-        else:
-            redirect(url_for("main.login"))
+        except Exception as e:
+            flash("An error occurred. Please try again.")
+            current_app.logger.error(f"Sign up error: {str(e)}")
+            return render_template("sign_up.html", form=form)
+
+
     return render_template("sign_up.html", form= form)
 
 @main_bp.route("/logout")
@@ -86,24 +97,30 @@ def create_user(form):
     if not user_exists:
         # Check if username is taken
         if not username_taken:
-            new_user = User(
-                full_name = full_name,#type:ignore
-                username = username,#type:ignore
-                email = email,#type:ignore
-                password = password)#type:ignore
+            try:
+                new_user = User(
+                    full_name = full_name,#type:ignore
+                    username = username,#type:ignore
+                    email = email,#type:ignore
+                    password = password)#type:ignore
 
-            db.session.add(new_user)
-            db.session.commit()
-            flash(f"Registration Successful. Welcome to Village {full_name}")
-            login_user(new_user, remember=True)
-            flash(f"User {current_user.full_name} is logged in")
-            return "home"
+                db.session.add(new_user)
+                db.session.commit()
+                flash(f"Registration Successful. Welcome to Village {full_name}")
+                login_user(new_user, remember=True)
+                flash(f"User {current_user.full_name} is logged in")
+                return "home"
+            except Exception as e:
+                db.session.rollback()
+                flash(f"error creating user: {str(e)}")
+                current_app.logger.error(f"Database error:"
+                                 f"{str(e)}")
         else:
             flash("Username is already taken. choose another username ")
             return "signup"
     else:
         flash("User already exists. Log in instead ")
-        return
+        return "login"
 
 def confirm_login(form):
     # Get user data
