@@ -33,8 +33,10 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         if confirm_login(form):
+            # if the login is successful
             return redirect(url_for("main.home"))
         else:
+            # if the login is Unsuccessful
             return redirect(url_for("main.login"))
     return render_template("login.html", form= form)
 
@@ -42,9 +44,6 @@ def login():
 @main_bp.route("/sign_up", methods= ["GET", "POST"])
 def signup():
     form = RegisterForm()
-    print(f"Form submitted: {request.method}")  # Debug
-    print(f"Form validate on submit: {form.validate_on_submit()}")  # Debug
-    print(f"Form errors: {form.errors}")  # Debug
 
     if form.validate_on_submit():
         user_redirect = create_user(form)
