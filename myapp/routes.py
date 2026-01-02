@@ -47,10 +47,15 @@ def signup():
     print(f"Form errors: {form.errors}")  # Debug
 
     if form.validate_on_submit():
-        if create_user(form):
+        user_redirect = create_user(form)
+
+
+        if user_redirect == "home":
             return redirect(url_for("main.home"))
+        elif user_redirect == "signup":
+            return redirect(url_for("main.signup"))
         else:
-            return redirect(url_for("main.login"))
+            redirect(url_for("main.login"))
     return render_template("sign_up.html", form= form)
 
 @main_bp.route("/logout")
@@ -59,6 +64,13 @@ def logout():
     logout_user()
     flash("User has been logged out")
     return redirect(url_for("main.home"))
+
+
+
+
+
+
+# functions for object manipulation
 
 def create_user(form):
     # User information from the form
@@ -69,30 +81,37 @@ def create_user(form):
 
 
     user_exists = db.session.query(exists().where((User.email == email))).scalar()
+    username_taken = db.session.query(exists().where((User.username == username))).scalar()
+
     # check if user exists in the database
     if not user_exists:
+        # Check if username is taken
+        if not username_taken:
+            new_user = User(
+                full_name = full_name,#type:ignore
+                username = username,#type:ignore
+                email = email,#type:ignore
+                password = password)#type:ignore
 
-        new_user = User(
-            full_name = full_name,#type:ignore
-            username = username,#type:ignore
-            email = email,#type:ignore
-            password = password)#type:ignore
-
-        db.session.add(new_user)
-        db.session.commit()
-        flash(f"Registration Successful. Welcome to Village {full_name}")
-        login_user(new_user, remember=True)
-        flash(f"User {current_user.full_name} is logged in")
-        return True
-
+            db.session.add(new_user)
+            db.session.commit()
+            flash(f"Registration Successful. Welcome to Village {full_name}")
+            login_user(new_user, remember=True)
+            flash(f"User {current_user.full_name} is logged in")
+            return "home"
+        else:
+            flash("Username is already taken. choose another username ")
+            return "signup"
     else:
         flash("User already exists. Log in instead ")
-        return False
+        return
 
 def confirm_login(form):
     # Get user data
     password = form.password.data
     email = form.email.data
+    remember_me = form.remember_me.data
+    print(remember_me)
     # check if user exists in database
     user_exists = db.session.query(exists().where((User.email == email))).scalar()
 
@@ -100,9 +119,14 @@ def confirm_login(form):
         user = db.session.scalar(select(User).where(User.email == email))
 
         if check_password_hash(user.password, password):
-            login_user(user, remember=True)
-            flash(f"User {current_user.full_name} is logged in")
-            return True
+            if remember_me:
+                login_user(user, remember=True)
+                flash(f"User {current_user.full_name} is logged in")
+                return True
+            else:
+                login_user(user)
+                flash(f"User {current_user.full_name} is logged in")
+                return True
         else:
             flash("User password is incorrect, Try again")
             return False
