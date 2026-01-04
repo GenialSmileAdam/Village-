@@ -10,7 +10,7 @@ from .schemas import UserSchema, ValidationError
 from pprint import pprint
 
 main_bp = Blueprint('main',__name__)
-api_bp = Blueprint("api",__name__)
+api_bp = Blueprint("api",__name__,url_prefix="/api")
 login_manager.login_view = "main.login"
 
 
