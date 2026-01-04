@@ -1,18 +1,17 @@
-
-from flask import flash, current_app
 from flask_login import login_user, current_user
+from flask import flash, current_app
 from .models import db, User
 from sqlalchemy import exists, select
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # functions for object manipulation
 
-def create_user(form):
+def create_user(user_data):
     # User information from the form
-    full_name = form.full_name.data
-    username = form.username.data
-    email = form.email.data
-    password = generate_password_hash(form.password.data, method="pbkdf2:sha256", salt_length=8)
+    full_name = user_data.get("full_name")
+    username = user_data.get("username")
+    email = user_data.get("email")
+    password = generate_password_hash(user_data.get("password"), method="pbkdf2:sha256", salt_length=8)
 
 
     user_exists = db.session.query(exists().where((User.email == email))).scalar()
@@ -31,21 +30,30 @@ def create_user(form):
 
                 db.session.add(new_user)
                 db.session.commit()
-                flash(f"Registration Successful. Welcome to Village {full_name}")
-                login_user(new_user, remember=True)
-                flash(f"User {current_user.full_name} is logged in")
-                return "home"
+                return {"message": f"User {full_name} has been Registered",
+                 "status": "Success",
+                 "code":201}
             except Exception as e:
                 db.session.rollback()
-                flash(f"error creating user: {str(e)}")
+
+
                 current_app.logger.error(f"Database error:"
                                  f"{str(e)}")
+                return {"message": f"error creating user: {str(e)}",
+                        "status": "error",
+                        "code": 500}
+
         else:
-            flash("Username is already taken. choose another username ")
-            return "signup"
+
+            return {"message": "Username is already taken. choose another username ",
+                    "status": "error",
+                    "code": 403}
+
     else:
-        flash("User already exists. Log in instead ")
-        return "login"
+        return {"message": "User already exists. Log in instead",
+                "status": "error",
+                "code": 403}
+
 
 def confirm_login(form):
     # Get user data

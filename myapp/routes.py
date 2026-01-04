@@ -1,3 +1,4 @@
+from dns.e164 import query
 from flask import render_template, Blueprint, request, url_for, redirect, flash, current_app, jsonify
 from flask_login import login_user, current_user, login_required, logout_user
 from .extensions import login_manager
@@ -5,7 +6,8 @@ from .models import db, User, Hobby
 from .forms import RegisterForm, LoginForm
 from sqlalchemy import exists, select
 from .functions import create_user, confirm_login
-
+from .schemas import UserSchema, ValidationError
+from pprint import pprint
 
 main_bp = Blueprint('main',__name__)
 api_bp = Blueprint("api",__name__)
@@ -21,6 +23,10 @@ def load_user(user_id):
 # ---------Main Routes-------------
 @main_bp.route("/")
 def home():
+    # user = db.session.scalar(select(User).where(User.id == 1))
+    # schema = UserSchema()
+    # result = schema.dump(user)
+    # pprint(result)
     return render_template("index.html")
 
 @main_bp.route("/chat")
@@ -78,18 +84,27 @@ def logout():
 
 @api_bp.route("/register",methods= ["POST"])
 def register():
-    data = request.get_json()
-    full_name  = data.get("full_name")
-    username  = data.get("username")
-    password  = data.get("password")
-    email  = data.get("email")
+    user_data = request.get_json()
+    pprint(user_data)
+    # Debug: Print exact values with repr() to see hidden characters
+    # print("DEBUG - Raw JSON received:", user_data)
+    # print(f"DEBUG - password: '{user_data.get('password')}' (type: {type(user_data.get('password'))})")
+    # print(f"DEBUG - confirm_password: '{user_data.get('confirm_password')}' (type: {type(user_data.get('confirm_password'))})")
+    # print(f"DEBUG - Are they equal? {user_data.get('password') == user_data.get('confirm_password')}")
+    # print(f"DEBUG - Are they identical? {user_data.get('password') is user_data.get('confirm_password')}")
 
-    return jsonify(data = data,
-                   structured_data= {
-                       "full_name": full_name,
-                       "username":username,
-                       "email":email,
-                       "password":password
-                   }), 200
+    schema = UserSchema()
+
+    try:
+        user_data = schema.load(user_data)
+    except ValidationError as err:
+        return jsonify(errors =err.messages,
+                       valid_data = err.valid_data), 400
+    else:
+        message = create_user(user_data)
+
+        return jsonify(data = user_data,
+                       message= message), message["code"]
+
 
 
