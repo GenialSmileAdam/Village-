@@ -35,9 +35,10 @@ def create_app(config_name=None):
 
 
     # initialize extensions
-    from .extensions import db, login_manager, cors
+    from .extensions import db, login_manager, cors, jwt
     db.init_app(app)
     cors.init_app(app)
+    jwt.init_app(app)
     # csrf.init_app(app)
     login_manager.init_app(app)
 

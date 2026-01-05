@@ -6,18 +6,18 @@ from .models import db, User, Hobby
 from .forms import RegisterForm, LoginForm
 from sqlalchemy import exists, select
 from .functions import create_user, confirm_login
-from .schemas import UserSchema, ValidationError
+from .schemas import RegistrationSchema, ValidationError, LoginSchema
 from pprint import pprint
 
-main_bp = Blueprint('main',__name__)
-api_bp = Blueprint("api",__name__,url_prefix="/api")
+main_bp = Blueprint('main', __name__)
+api_bp = Blueprint("api", __name__, url_prefix="/api")
 login_manager.login_view = "main.login"
 
 
 # Load a user
 @login_manager.user_loader
 def load_user(user_id):
-    return  db.session.scalar(select(User).where(User.id == user_id) )
+    return db.session.scalar(select(User).where(User.id == user_id))
 
 
 # ---------Main Routes-------------
@@ -29,9 +29,11 @@ def home():
     # pprint(result)
     return render_template("index.html")
 
+
 @main_bp.route("/chat")
 def chat():
     return render_template("chat.html")
+
 
 @main_bp.route("/login", methods=["POST", "GET"])
 def login():
@@ -50,11 +52,10 @@ def login():
             current_app.logger.error(f"Login error: {str(e)}")
             return render_template("login.html", form=form)
 
+    return render_template("login.html", form=form)
 
-    return render_template("login.html", form= form)
 
-
-@main_bp.route("/sign_up", methods= ["GET", "POST"])
+@main_bp.route("/sign_up", methods=["GET", "POST"])
 def signup():
     form = RegisterForm()
 
@@ -70,8 +71,8 @@ def signup():
             current_app.logger.error(f"Sign up error: {str(e)}")
             return render_template("sign_up.html", form=form)
 
+    return render_template("sign_up.html", form=form)
 
-    return render_template("sign_up.html", form= form)
 
 @main_bp.route("/logout")
 @login_required
@@ -80,9 +81,10 @@ def logout():
     flash("User has been logged out")
     return redirect(url_for("main.home"))
 
+
 # -------------API Routes -------------------
 
-@api_bp.route("/register",methods= ["POST"])
+@api_bp.route("/register", methods=["POST"])
 def register():
     user_data = request.get_json()
     pprint(user_data)
@@ -93,18 +95,34 @@ def register():
     # print(f"DEBUG - Are they equal? {user_data.get('password') == user_data.get('confirm_password')}")
     # print(f"DEBUG - Are they identical? {user_data.get('password') is user_data.get('confirm_password')}")
 
-    schema = UserSchema()
+    schema = RegistrationSchema()
 
     try:
-        user_data = schema.load(user_data)
+        loaded_user_data = schema.load(user_data)
     except ValidationError as err:
-        return jsonify(errors =err.messages,
-                       valid_data = err.valid_data), 400
+        return jsonify(errors=err.messages,
+                       valid_data=err.valid_data), 400
     else:
-        message = create_user(user_data)
+        message = create_user(loaded_user_data)
 
-        return jsonify(data = user_data,
-                       message= message), message["code"]
+        return jsonify(data=loaded_user_data,
+                       message=message), message["code"]
 
 
+@api_bp.route("/login", methods=["POST"])
+def login():
+    user_data = request.get_json()
+    pprint(user_data)
 
+    schema = LoginSchema()
+
+    try:
+        loaded_user_data = schema.load(user_data)
+    except ValidationError as err:
+        return jsonify(errors=err.messages,
+                       valid_data=err.valid_data), 400
+    else:
+        message = confirm_login(loaded_user_data)
+
+        return jsonify(input_data=loaded_user_data,
+                       message=message), message["code"]

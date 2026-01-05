@@ -1,8 +1,6 @@
-from marshmallow import Schema, validate, ValidationError, validates_schema, post_load
+from marshmallow import Schema, validate, ValidationError, validates_schema
 from marshmallow.validate import Length
 from marshmallow.fields import String, Email, Boolean
-from .models import User
-from .functions import create_user
 import re
 
 
@@ -28,7 +26,7 @@ def validate_password_complexity(password):
         raise ValidationError(f'Password needs: {", ".join(errors)}')
 
 
-class UserSchema(Schema):
+class RegistrationSchema(Schema):
     full_name = String(validate=Length(min=5, max=40), required=True)
     username = String(validate=Length(min=5, max=40), required=True)
     email = Email(validate=Length(max=80))
@@ -57,4 +55,9 @@ class UserSchema(Schema):
                 "confirm_password": ["Passwords are not the same"]
             })
 
+
+class LoginSchema(Schema):
+    email = Email(required=True)
+    remember_me = Boolean()
+    password = String(required=True, load_only=True)
 

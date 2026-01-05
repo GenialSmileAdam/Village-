@@ -3,9 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from flask_login import LoginManager
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 import os
-from flask import current_app
 
 load_dotenv()
 
@@ -17,6 +17,7 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 # csrf = CSRFProtect()
 login_manager = LoginManager()
+jwt = JWTManager()
 
 if os.environ.get("FLASK_ENV") == "development":
     # Development: allow everything from localhost
