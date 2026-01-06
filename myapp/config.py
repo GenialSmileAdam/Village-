@@ -15,6 +15,14 @@ class Config:
     SECRET_KEY = secrets.token_hex()
     DEBUG = os.environ.get('FLASK_ENV') == 'development'
 
+    # JWT TOKEN
+    JWT_SECRET_KEY  = os.environ.get('JWT_SECRET_KEY')
+    # JWT_SECRET_KEY = secrets.token_hex()
+    JWT_COOKIE_SECURE = False
+    JWT_TOKEN_LOCATION = ["cookies"]
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours= 5)
+
+
     # Database
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -38,6 +46,8 @@ class DevelopmentConfig(Config):
     """Development settings"""
     DEBUG = True
     SQLALCHEMY_ECHO = True #Show SQL Queries
+    JWT_COOKIE_SECURE = True
+
 
 class ProductionConfig(Config):
     """Production settings"""

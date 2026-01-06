@@ -1,9 +1,8 @@
-from flask_login import login_user, current_user
 from flask import flash, current_app
 from .models import db, User
 from sqlalchemy import exists, select
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from flask_jwt_extended import create_access_token
 
 # functions for object manipulation
 
@@ -67,15 +66,19 @@ def confirm_login(user_data):
         user = db.session.scalar(select(User).where(User.email == email))
 
         if check_password_hash(user.password, password):
+
+            access_token = create_access_token(identity=user)
             if remember_me:
 
                 return {"message": f"User {user.full_name} accepted remember and has been logged in",
+                        "access_token":access_token,
                         "status": "Success",
-                        "code": 201}
+                        "code": 200}
             else:
                 return {"message": f"User {user.full_name} has been logged in",
+                        "Access_token": access_token,
                         "status": "Success",
-                        "code": 201}
+                        "code": 200}
         else:
             flash("")
             return {"message": "User password is incorrect, Try again",
