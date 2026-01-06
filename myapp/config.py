@@ -16,8 +16,7 @@ class Config:
     DEBUG = os.environ.get('FLASK_ENV') == 'development'
 
     # JWT TOKEN
-    JWT_SECRET_KEY  = os.environ.get('JWT_SECRET_KEY')
-    # JWT_SECRET_KEY = secrets.token_hex()
+    JWT_SECRET_KEY = secrets.token_hex()
     JWT_COOKIE_SECURE = False
     JWT_TOKEN_LOCATION = ["cookies"]
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours= 5)
