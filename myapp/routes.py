@@ -131,15 +131,22 @@ def register():
     schema = RegistrationSchema()
 
     try:
-        loaded_user_data = schema.load(user_data)
+        validated_json_data = schema.load(user_data)
     except ValidationError as err:
         return jsonify(errors=err.messages,
                        valid_data=err.valid_data), 400
     else:
-        message = create_user(loaded_user_data)
+        registration_message = create_user(validated_json_data)
 
-        return jsonify(data=loaded_user_data,
-                       message=message), message["code"]
+        # if registration is Successful
+        if registration_message["code"] == 201:
+            response = confirm_login(validated_json_data)
+
+
+            return response, registration_message["code"]
+        else:
+
+            return registration_message, registration_message["code"]
 
 
 @api_bp.route("/login", methods=["POST"])
@@ -157,17 +164,9 @@ def login():
                        valid_data=err.valid_data), 400
     else:
         # Confirm login and get response message
-        message = confirm_login(validated_json_data)
+        response = confirm_login(validated_json_data)
 
-        response = jsonify(input_data=validated_json_data,
-                           message=message)
-
-        if message["code"] == 200:
-            # If login is successful, add cookies to the response
-            access_token = message["access_token"]
-            set_access_cookies(response, access_token)
-
-        return response, message["code"]
+        return response, response["code"]
 
 
 @api_bp.route("/get_user", methods=["GET"])

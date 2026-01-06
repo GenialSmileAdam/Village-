@@ -1,8 +1,8 @@
-from flask import flash, current_app
+from flask import flash, current_app, jsonify
 from .models import db, User
 from sqlalchemy import exists, select
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, set_access_cookies
 
 # functions for object manipulation
 
@@ -68,25 +68,23 @@ def confirm_login(user_data):
         if check_password_hash(user.password, password):
 
             access_token = create_access_token(identity=user)
-            if remember_me:
 
-                return {"message": f"User {user.full_name} accepted remember and has been logged in",
-                        "access_token":access_token,
-                        "status": "Success",
-                        "code": 200}
-            else:
-                return {"message": f"User {user.full_name} has been logged in",
-                        "Access_token": access_token,
-                        "status": "Success",
-                        "code": 200}
+            response = jsonify(
+                {"message": f"User {user.full_name} has been logged in",
+                    "Access_token": access_token,
+                    "status": "Success",
+                    "code": 200}
+            )
+
+            set_access_cookies(response, access_token)
+
+            return response
         else:
-            flash("")
             return {"message": "User password is incorrect, Try again",
                         "status": "error",
                         "code": 403}
 
     else:
-        flash("User  with that email does not exist ")
         return {"message": "User  with that email does not exist ",
                         "status": "error",
                         "code": 404}
