@@ -1,7 +1,5 @@
-from flask_wtf.csrf import CSRFProtect
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
-from flask_login import LoginManager
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
@@ -16,7 +14,6 @@ class Base(DeclarativeBase):
 
 db = SQLAlchemy(model_class=Base)
 # csrf = CSRFProtect()
-login_manager = LoginManager()
 jwt = JWTManager()
 
 if os.environ.get("FLASK_ENV") == "development":
