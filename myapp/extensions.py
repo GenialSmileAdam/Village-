@@ -13,7 +13,6 @@ class Base(DeclarativeBase):
 
 
 db = SQLAlchemy(model_class=Base)
-# csrf = CSRFProtect()
 jwt = JWTManager()
 
 if os.environ.get("FLASK_ENV") == "development":
