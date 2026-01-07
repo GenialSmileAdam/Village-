@@ -20,6 +20,7 @@ class Config:
     JWT_COOKIE_SECURE = False
     JWT_TOKEN_LOCATION = ["cookies"]
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours= 5)
+    JWT_COOKIE_CSRF_PROTECT = True
 
 
     # Database

@@ -14,11 +14,9 @@ def create_app(config_name=None):
         config_name = os.environ.get("FLASK_ENV", "development")
 
     # Get project Root path
-    project_root = Path(__file__).parent.parent.absolute()
+    # project_root = Path(__file__).parent.parent.absolute()
 
-    app = Flask(__name__,
-                template_folder=project_root / "templates",
-                static_folder=project_root/ "static")
+    app = Flask(__name__)
 
     #Load Configuration
     app.config.from_object(config[config_name])
