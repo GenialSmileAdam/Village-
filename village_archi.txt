@@ -1,0 +1,43 @@
+<<<<<<<<<<<<system archcitecture >>>>>>>>>>>>>>>>>>.
+
+SIGN UP
+#identity verification matric number or NIN in large scale profile picture or avatar selection
+
+#database model with preset and analyzed questions to feed database like department hobbies level 
+
+#password and username <<password hasshing >>
+#email and otp service ||otp using secrets in python | store in tempoary db 
+
+
+SIGN IN 
+admin sign up page on a different route eg /admin111
+home page should have a landing page then login somehwere maybe in the nav bar 
+
+CHAT SERVICE FOR 1 ON 1 AND FOsR COMMUNITY || integrate calls video and audio later 
+
+UPLOAD OF VIDEO AND TEXT CAPTIONS WITH HASHTAGS AND SHII || that likes and comments can be on use case twitter
+
+<<<out of mvp>>>
+student email verification 
+
+
+
+##notes 
+main.py -jason 
+auth.py - victor
+frontend - leo 
+>>>everyhting shld relate to each other in frontend page 
+
+#AUTH.PY docs 
+using tempoary dictionaries (user_db and otp-store)
+##routes
+/api/register , method = POST 
+/api/verify-otp , method = POST
+/api/login , method =POST
+updates>>update database , update otp mechanism to send to emails 
+
+from auth import auth_bp
+app.register_blueprint(auth_bp)
+changes made to main.py 
+||from auth import auth_bp
+app.register_blueprint(auth_bp||
