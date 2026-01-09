@@ -1,8 +1,9 @@
-from flask import  current_app, jsonify
+from flask import current_app, jsonify
 from .models import db, User
 from sqlalchemy import exists, select
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, set_access_cookies
+
 
 # functions for object manipulation
 
@@ -11,7 +12,8 @@ def create_user(user_data):
     full_name = user_data.get("full_name").strip()
     username = user_data.get("username").strip()
     email = user_data.get("email").strip()
-    password = generate_password_hash(user_data.get("password"), method="pbkdf2:sha256", salt_length=8)
+    password = generate_password_hash(user_data.get("password"),
+                                      method="pbkdf2:sha256", salt_length=8)
 
     user_exists = db.session.query(exists().where((User.email == email))).scalar()
     username_taken = db.session.query(exists().where((User.username == username))).scalar()
@@ -69,22 +71,40 @@ def confirm_login(user_data):
 
             access_token = create_access_token(identity=user)
 
-            response = jsonify(
-                {"message": f"User {user.full_name} has been logged in",
-                    "Access_token": access_token,
-                    "status": "Success",
-                    "code": 200}
-            )
+            response_data = {"access_token": access_token}
 
-            set_access_cookies(response, access_token)
 
-            return response
+            return success_response(response_data, add_access_token=True)
         else:
-            return {"message": "User password is incorrect, Try again",
-                        "status": "error",
-                        "code": 403}
+            response_data = {"message": "User password is incorrect, Try again"}
+
+            return error_response(response_data, status_code=403)
 
     else:
-        return {"message": "User  with that email does not exist ",
-                        "status": "error",
-                        "code": 404}
+        response_data = {"message": "User  with that email does not exist "}
+        return error_response(response_data, status_code=404)
+
+
+def success_response(data= None, message= "Success", status_code= 200, add_access_token = False):
+    """Standard Success response"""
+    response = {
+        "success": True,
+        "message":message,
+        "data":data,
+    }
+
+    response_data =  jsonify(response)
+    if add_access_token:
+        set_access_cookies(response_data, data["access_token"])
+
+    return response_data, status_code
+
+def error_response(message="Error", errors=None, status_code=400):
+    """Standard error response"""
+    response = {
+        'success': False,
+        'message': message
+    }
+    if errors:
+        response['errors'] = errors
+    return jsonify(response), status_code

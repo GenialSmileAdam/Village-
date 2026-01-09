@@ -9,7 +9,7 @@ from flask_jwt_extended import (jwt_required, get_jwt_identity, current_user, ge
                                 unset_jwt_cookies)
 from .extensions import jwt
 from datetime import timezone, timedelta, datetime
-
+from .functions import  error_response, success_response
 
 # Blueprint
 api_bp = Blueprint("api", __name__, url_prefix="/api")
@@ -69,13 +69,11 @@ def register():
 
         # if registration is Successful
         if registration_message["code"] == 201:
-            response = confirm_login(validated_json_data)
 
-
-            return response, registration_message["code"]
+             return confirm_login(validated_json_data)
         else:
 
-            return registration_message, registration_message["code"]
+            return success_response(registration_message)
 
 
 @api_bp.route("/login", methods=["POST"])
@@ -88,14 +86,12 @@ def login():
     try:
         validated_json_data = schema.load(user_data)
     except ValidationError as err:
-
-        return jsonify(errors=err.messages,
-                       valid_data=err.valid_data), 400
+        errors = jsonify(errors=err.messages,
+                       valid_data=err.valid_data)
+        return error_response(errors)
     else:
         # Confirm login and get response message
-        response = confirm_login(validated_json_data)
-
-        return response, response["code"]
+        return  confirm_login(validated_json_data)
 
 
 @api_bp.route("/get_user", methods=["GET"])

@@ -3,8 +3,7 @@ from flask import Flask
 from .extensions import db
 from .config import config
 from dotenv import load_dotenv
-from pathlib import Path
-import click
+from .commands import init_db_command, create_admin_command
 
 load_dotenv()
 
@@ -21,16 +20,9 @@ def create_app(config_name=None):
     #Load Configuration
     app.config.from_object(config[config_name])
 
-    # Register the init-db command
-    @app.cli.command("init-db")
-    def init_db_command():
-        """Clear existing data and create new tables"""
-        from .models import db
-
-        with app.app_context():
-            db.create_all()
-        click.echo("Initialized the database")
-
+    # Register commands
+    app.cli.add_command(init_db_command)
+    app.cli.add_command(create_admin_command)
 
     # initialize extensions
     from .extensions import db,  cors, jwt

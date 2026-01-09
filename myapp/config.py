@@ -12,11 +12,11 @@ basedir= Path(__file__).parent.absolute()
 class Config:
     """Base Configuration"""
     # Security
-    SECRET_KEY = secrets.token_hex()
+    SECRET_KEY =  os.environ.get('SECRET_KEY')
     DEBUG = os.environ.get('FLASK_ENV') == 'development'
 
     # JWT TOKEN
-    JWT_SECRET_KEY = secrets.token_hex()
+    JWT_SECRET_KEY =os.environ.get('JWT_SECRET_KEY')
     JWT_COOKIE_SECURE = False
     JWT_TOKEN_LOCATION = ["cookies"]
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours= 5)
@@ -51,16 +51,31 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     """Production settings"""
-    Debug=False
+    DEBUG=False
+    TESTING  =False
 
+    # SECURITY
+    SECRET_KEY = os.environ['SECRET_KEY']  # Must be set
+    SESSION_COOKIE_SECURE = True  # HTTPS only
+    REMEMBER_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+
+    # JWT with cookies
+    JWT_COOKIE_SECURE = True
+    JWT_COOKIE_CSRF_PROTECT = True
+
+    # CORS - restrict to your frontend
+    # CORS_ORIGINS = ['https://yourdomain.com']
 
     SQLALCHEMY_DATABASE_URI =  os.environ.get("DATABASE_URL")
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_recycle': 300,  # Recycle DB connections every 5 minutes
+        'pool_pre_ping': True,  # Verify connection before using
+    }
     if not SQLALCHEMY_DATABASE_URI:
         raise ValueError("DATABASE_URL is required for production")
 
-
-    # Require HTTPS
-    SESSION_COOKIE_SECURE = True
 
 
 # Easy access
