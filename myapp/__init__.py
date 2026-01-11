@@ -17,6 +17,8 @@ def create_app(config_name=None):
 
     app = Flask(__name__)
 
+    # Setup logging
+    setup_logging(app)
     #Load Configuration
     app.config.from_object(config[config_name])
 
@@ -41,6 +43,19 @@ def create_app(config_name=None):
     return app
 
 
+def setup_logging(app):
+    """Minimal setup for Vercel"""
+    import logging
+    import sys
+
+    # Single handler to stdout
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(
+        logging.Formatter('%(levelname)s: %(message)s')
+    )
+
+    app.logger.handlers = [handler]
+    app.logger.setLevel(logging.INFO)
 #
 # def _init_extensions(app):
 #     """Initialize Flask extensions with the app"""
