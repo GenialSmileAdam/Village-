@@ -1,3 +1,4 @@
+from __future__ import annotations
 from flask import Blueprint, request, jsonify
 from .models import db, User
 from sqlalchemy import  select
@@ -7,10 +8,9 @@ from pprint import pprint
 from flask_jwt_extended import (jwt_required, get_jwt_identity, current_user, get_jwt,
                                 create_access_token, set_access_cookies,
                                 unset_jwt_cookies)
-from .extensions import jwt
+from .extensions import jwt, limiter
 from datetime import timezone, timedelta, datetime
 from .functions import  error_response, success_response
-
 # Blueprint
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -47,6 +47,7 @@ def refresh_expiring_jwt(response):
 # -------------API Routes -------------------
 
 @api_bp.route("/register", methods=["POST"])
+@limiter.limit("1/second")
 def register():
     user_data = request.get_json()
     pprint(user_data)
@@ -77,6 +78,7 @@ def register():
 
 
 @api_bp.route("/login", methods=["POST"])
+@limiter.limit("1/second", override_defaults=False)
 def login():
     user_data = request.get_json()
     pprint(user_data)

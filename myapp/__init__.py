@@ -27,10 +27,11 @@ def create_app(config_name=None):
     app.cli.add_command(create_admin_command)
 
     # initialize extensions
-    from .extensions import db,  cors, jwt
+    from .extensions import db,  cors, jwt, limiter
     db.init_app(app)
     cors.init_app(app)
     jwt.init_app(app)
+    limiter.init_app(app)
 
     # Register routes/blueprints
     from .routes import  api_bp
