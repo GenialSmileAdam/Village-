@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
 # Activate it:
 # Windows:
-#  venv\Scripts\ activate
+# venv\Scripts\activate
 
 # Mac/Linux:
 # source venv/bin/activate

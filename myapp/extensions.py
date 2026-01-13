@@ -18,7 +18,7 @@ jwt = JWTManager()
 if os.environ.get("FLASK_ENV") == "development":
     # Development: allow everything from localhost
     cors = CORS(
-                origins=["http://localhost:3000", "http://127.0.01:3000"],
+                origins=["http://localhost:5173", "http://127.0.0.1:5000"],
                 supports_credentials=True)
 else:
 # Production: strict configuration
