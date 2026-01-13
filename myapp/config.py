@@ -1,5 +1,5 @@
 import os
-
+import secrets
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import timedelta
@@ -12,11 +12,11 @@ basedir= Path(__file__).parent.absolute()
 class Config:
     """Base Configuration"""
     # Security
-    SECRET_KEY =  os.environ.get('SECRET_KEY')
+    SECRET_KEY =  os.environ.get('SECRET_KEY',secrets.token_hex(32))
     DEBUG = os.environ.get('FLASK_ENV') == 'development'
 
     # JWT TOKEN
-    JWT_SECRET_KEY =os.environ.get('JWT_SECRET_KEY')
+    JWT_SECRET_KEY =os.environ.get('JWT_SECRET_KEY',secrets.token_hex(32))
     JWT_COOKIE_SECURE = False
     JWT_TOKEN_LOCATION = ["cookies"]
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours= 5)
