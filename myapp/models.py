@@ -35,6 +35,7 @@ class User(db.Model):
     full_name:Mapped[int]
     username: Mapped[str] = mapped_column(unique=True)
     email: Mapped[str] = mapped_column(unique=True)
+    is_admin: Mapped[Optional[bool]]
     password:Mapped[str]
     biography: Mapped[Optional[str]]
     profile_picture :Mapped[Optional[str]]
