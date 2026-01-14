@@ -114,3 +114,37 @@ def logout():
         })
     unset_jwt_cookies(response)
     return response
+
+
+@api_bp.route("/health", methods=["GET"])
+def health_check():
+    """
+    Health check endpoint for monitoring and load balancers.
+    Checks database connectivity and basic app status.
+    """
+    try:
+        # Check database connection
+        db.session.execute("SELECT 1")
+
+        # Check if database has at least one user table (optional)
+        # user_count = db.session.scalar(select(db.func.count(User.id)))
+
+        return jsonify({
+            "status": "healthy",
+            "service": "auth-api",
+            "timestamp": datetime.utcnow().isoformat(),
+            "database": "connected",
+            "uptime": "N/A"  # You could add uptime tracking later
+        }), 200
+
+    except Exception as e:
+        # Log the error (consider adding proper logging)
+        # current_app.logger.error(f"Health check failed: {str(e)}")
+
+        return jsonify({
+            "status": "unhealthy",
+            "service": "auth-api",
+            "timestamp": datetime.utcnow().isoformat(),
+            "database": "disconnected",
+            "error": "Database connection failed"  # Generic message for security
+        }), 503  # 503 Service Unavailable
