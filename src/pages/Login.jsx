@@ -16,6 +16,7 @@ export default function Login() {
           const res = await login(data);
           console.log(res.data);
           alert("Login Successful!");
+
           navigate("/")
           // redirect user or save token
         } catch (err) {

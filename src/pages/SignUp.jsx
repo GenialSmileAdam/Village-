@@ -1,8 +1,9 @@
 import { FaMapLocationDot, FaUsers, FaStar, FaTrophy, FaHeart, FaTree, FaSeedling} from "react-icons/fa6";
-import { Link } from "react-router-dom"; 
+import {Link, useNavigate} from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { signup } from "../api/auth";
 import  Head  from "../components/Head.jsx"
+import {useState} from "react";
 
 
 
@@ -13,7 +14,8 @@ export default function SignUp() {
         reset,
             formState:{errors, isSubmitting},
             getValues} = useForm();
-
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
     const onSubmit = async (data) => {
         console.log("FORM DATA:", data);
         try {
@@ -21,9 +23,13 @@ export default function SignUp() {
             console.log("API RESPONSE:", res.data);
             alert("Account created!");
             reset()
+            navigate()
         } catch (err) {
+            const message = err.response?.data.errors?.message || err.message || "An unexpected error occurred";
+            setError(message);
             console.error("API ERROR:", err.response || err);
         }
+
         reset()
     };
 
@@ -38,20 +44,20 @@ export default function SignUp() {
                 passions and interests.</p>
             </div>
             <div className="py-16 margin lg:w-1/2">
-
+                {error && <p style={{ color: 'red' }}>{error}</p>}
                 <h2>Create Account</h2>
                 <p className="mt-3">Get ready to find your village people</p>
                 <form className="mt-9 form" onSubmit={handleSubmit(onSubmit)}>
                     <div className="form_input">
                         <label htmlFor="">Full Name:</label>
-                        <input type="text" className="border" placeholder="Jason Hughes" {...register("full_name", {required:"Enter your Full Name"} )}></input>
+                        <input type="text" className="border" placeholder="Jason Hughes" {...register("full_name", {required:"Enter your Full Name", min:5, max:5} )}></input>
                         {errors.full_name&&(<p className="text-red-500 text-sm mt-2">{`${errors.full_name.message}`}</p>)}
                     </div>
 
                     <div className="form_input">
                         <label htmlFor="">Username:</label>
                         <input type="text" className="border"
-                        placeholder="@jason_hughes" {...register("username", {required:"Enter a Username"})}></input>
+                        placeholder="@jason_hughes" {...register("username", {required:"Enter a Username", min:5, max:5})}></input>
                         {errors.username&&(<p className="text-red-500 text-sm mt-2">{`${errors.username.message}`}</p>)}
 
                     </div>
