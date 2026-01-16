@@ -3,8 +3,7 @@ from flask import Flask
 from .extensions import db
 from .config import config
 from dotenv import load_dotenv
-from pathlib import Path
-import click
+from .commands import init_db_command, create_admin_command
 
 load_dotenv()
 
@@ -18,25 +17,21 @@ def create_app(config_name=None):
 
     app = Flask(__name__)
 
+    # Setup logging
+    setup_logging(app)
     #Load Configuration
     app.config.from_object(config[config_name])
 
-    # Register the init-db command
-    @app.cli.command("init-db")
-    def init_db_command():
-        """Clear existing data and create new tables"""
-        from .models import db
-
-        with app.app_context():
-            db.create_all()
-        click.echo("Initialized the database")
-
+    # Register commands
+    app.cli.add_command(init_db_command)
+    app.cli.add_command(create_admin_command)
 
     # initialize extensions
-    from .extensions import db,  cors, jwt
+    from .extensions import db,  cors, jwt, limiter
     db.init_app(app)
     cors.init_app(app)
     jwt.init_app(app)
+    limiter.init_app(app)
 
     # Register routes/blueprints
     from .routes import  api_bp
@@ -49,6 +44,19 @@ def create_app(config_name=None):
     return app
 
 
+def setup_logging(app):
+    """Minimal setup for Vercel"""
+    import logging
+    import sys
+
+    # Single handler to stdout
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(
+        logging.Formatter('%(levelname)s: %(message)s')
+    )
+
+    app.logger.handlers = [handler]
+    app.logger.setLevel(logging.INFO)
 #
 # def _init_extensions(app):
 #     """Initialize Flask extensions with the app"""
