@@ -23,7 +23,7 @@ export default function SignUp() {
             console.log("API RESPONSE:", res.data);
             alert("Account created!");
             reset()
-            navigate()
+            navigate("/")
         } catch (err) {
             const message = err.response?.data.errors?.message || err.message || "An unexpected error occurred";
             setError(message);
