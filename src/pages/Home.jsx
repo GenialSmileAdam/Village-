@@ -3,10 +3,14 @@ import Card from "../components/Card.jsx"
 import { FaMapLocationDot, FaUsers, FaStar, FaTrophy, FaHeart, FaTree, FaSeedling} from "react-icons/fa6";
 import {FaHome} from "react-icons/fa";
 import { Link } from "react-router-dom";
+import Head  from "../components/Head.jsx"
+
 
 function Hero(){
     return(
         <section className="h-92.5 flex flex-col justify-center items-start gap-3 overflow-hidden lg:h-[90vh]">
+            <Head title="Home" />
+
             <div className="hero-gradient-bg"></div>
             <div className="floating-icons">
                 <FaUsers className="icon icon-1" />
