@@ -1,7 +1,7 @@
 from __future__ import annotations
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from .models import db, User
-from sqlalchemy import  select
+from sqlalchemy import  select, text
 from .functions import create_user, confirm_login
 from .schemas import RegistrationSchema, ValidationError, LoginSchema
 from pprint import pprint
@@ -114,3 +114,32 @@ def logout():
         })
     unset_jwt_cookies(response)
     return response
+
+
+@api_bp.route("/health", methods=["GET"])
+def health_check():
+    """
+    Health check endpoint for monitoring and load balancers.
+    Checks database connectivity and basic app status.
+    """
+    try:
+        # Check database connection
+        db.session.execute(text("SELECT 1"))
+
+        return jsonify({
+            "status": "healthy",
+            "service": "auth-api",
+            "timestamp": datetime.now(),
+            "database": "connected"
+        }), 200
+
+    except Exception as e:
+        current_app.logger.error(f"Health check failed: {str(e)}")
+
+        return jsonify({
+            "status": "unhealthy",
+            "service": "auth-api",
+            "timestamp": datetime.now(),
+            "database": "disconnected",
+            "error": "Database connection failed"
+        }), 503

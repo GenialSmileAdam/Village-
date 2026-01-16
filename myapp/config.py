@@ -39,6 +39,13 @@ class Config:
     REMEMBER_COOKIE_DURATION = timedelta(days=14)
     REMEMBER_COOKIE_REFRESH_EACH_REQUEST = True
 
+    # Redis configuration
+    REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379")
+
+    # Rate limiting configuration
+    RATELIMIT_DEFAULT = "200 per day, 50 per hour"
+    RATELIMIT_STORAGE_URI = REDIS_URL
+    RATELIMIT_STRATEGY = "fixed-window"
     # App settings
     APP_NAME = "My Flask App"
 
@@ -47,6 +54,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_ECHO = True #Show SQL Queries
     JWT_COOKIE_SECURE = True
+    RATELIMIT_STORAGE_URI = "memory://"  # Use memory for development
 
 
 class ProductionConfig(Config):
