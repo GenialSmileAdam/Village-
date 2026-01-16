@@ -1,7 +1,7 @@
 from __future__ import annotations
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from .models import db, User
-from sqlalchemy import  select
+from sqlalchemy import  select, text
 from .functions import create_user, confirm_login
 from .schemas import RegistrationSchema, ValidationError, LoginSchema
 from pprint import pprint
@@ -121,34 +121,25 @@ def health_check():
     """
     Health check endpoint for monitoring and load balancers.
     Checks database connectivity and basic app status.
-
-
-
-
     """
     try:
         # Check database connection
-        db.session.execute("SELECT 1")
-
-        # Check if database has at least one user table (optional)
-        # user_count = db.session.scalar(select(db.func.count(User.id)))
+        db.session.execute(text("SELECT 1"))
 
         return jsonify({
             "status": "healthy",
             "service": "auth-api",
-            "timestamp": datetime.utcnow().isoformat(),
-            "database": "connected",
-            "uptime": "N/A"  # You could add uptime tracking later
+            "timestamp": datetime.now(),
+            "database": "connected"
         }), 200
 
     except Exception as e:
-        # Log the error (consider adding proper logging)
-        # current_app.logger.error(f"Health check failed: {str(e)}")
+        current_app.logger.error(f"Health check failed: {str(e)}")
 
         return jsonify({
             "status": "unhealthy",
             "service": "auth-api",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(),
             "database": "disconnected",
-            "error": "Database connection failed"  # Generic message for security
-        }), 503  # 503 Service Unavailable
+            "error": "Database connection failed"
+        }), 503

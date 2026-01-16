@@ -6,19 +6,15 @@ from dotenv import load_dotenv
 import os
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+import limits.storage as storage
 
 load_dotenv()
 
 
 class Base(DeclarativeBase):
     pass
-
 limiter = Limiter(get_remote_address,
-                  default_limits=["200 per day", "50 per hour"],
-                  storage_uri="redis://localhost:5000",
-                  storage_options={"socket_connect_timeout": 30},
-                  strategy="fixed-window",  # or "moving-window" or "sliding-window-counter"
-                  )
+                  storage_options={"socket_connect_timeout": 30})
 db = SQLAlchemy(model_class=Base)
 jwt = JWTManager()
 
