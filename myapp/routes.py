@@ -121,6 +121,10 @@ def health_check():
     """
     Health check endpoint for monitoring and load balancers.
     Checks database connectivity and basic app status.
+
+
+
+
     """
     try:
         # Check database connection
