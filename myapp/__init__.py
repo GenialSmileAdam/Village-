@@ -18,10 +18,16 @@ def create_app(config_name=None):
     # Load configuration
     app.config.from_object(config[config_name])
 
-    # Initialize extensions
+    # Register commands
+    app.cli.add_command(init_db_command)
+    app.cli.add_command(create_admin_command)
+
+    # initialize extensions
+    from .extensions import db,  cors, jwt, limiter
     db.init_app(app)
     cors.init_app(app)
     jwt.init_app(app)
+    limiter.init_app(app)
 
     # Register CLI commands
     app.cli.add_command(init_db_command)

@@ -4,8 +4,8 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 import os
-import logging   # change 1: import logging for central logger
-import sys       # change 2: import sys for console output
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 load_dotenv()
 
@@ -13,10 +13,9 @@ load_dotenv()
 class Base(DeclarativeBase):
     pass
 
-
-# -----------------------------
-# Flask Extensions
-# -----------------------------
+limiter = Limiter(get_remote_address,
+                  default_limits=["200 per day", "50 per hour"],
+                  )
 db = SQLAlchemy(model_class=Base)
 jwt = JWTManager()
 
