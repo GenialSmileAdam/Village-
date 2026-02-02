@@ -14,7 +14,7 @@ export default function SignUp() {
         reset,
             formState:{errors, isSubmitting},
             getValues} = useForm();
-    const [error, setError] = useState(null);
+    // const [error, setError] = useState(null);
     const navigate = useNavigate();
     const onSubmit = async (data) => {
         console.log("FORM DATA:", data);
@@ -25,8 +25,8 @@ export default function SignUp() {
             reset()
             navigate("/")
         } catch (err) {
-            const message = err.response?.data.errors?.message || err.message || "An unexpected error occurred";
-            setError(message);
+            // const message = err.response?.data.errors?.message || err.message || "An unexpected error occurred";
+            // setError(message);
             console.error("API ERROR:", err.response || err);
         }
 

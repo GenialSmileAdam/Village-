@@ -1,6 +1,7 @@
 import {Link} from "react-router-dom";
 import { Menu, MenuButton, MenuItems, MenuItem, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
+import { useAuth } from "../Context/AuthContext.jsx";
 import {
     FaBars,
     FaTimes,
@@ -18,6 +19,7 @@ function MobileMenu() {
         { icon: FaCalendarAlt, label: 'Events', href: '/events' },
         { icon: FaUser, label: 'Login', href: '/login' },
     ];
+
 
     return (
         <Menu as="div" className="lg:hidden">
@@ -77,6 +79,8 @@ function MobileMenu() {
     );
 }
 export default function Navbar() {
+    const { user } = useAuth();
+
     return (
         <div className="flex justify-between items-center bg-white px-(--space-margin) py-3 ">
             <div>
@@ -89,10 +93,16 @@ export default function Navbar() {
                     <li><Link to="/">Contact Us</Link></li>
                 </ul>
             </nav>
-            <div className="hidden lg:block">
-                <Link to="/login" className="font-[500] text-black login">Login</Link>
-                <Link to="/signup" className="button--primary ml-4 lg:py-1.6 px-5.5"> Create Account</Link>
-            </div>
+            {
+                user ?
+                    <p className="text-red-50">Hello, {user.username}</p> :
+                    <div className="hidden lg:block">
+                        <Link to="/login" className="font-[500] text-black login">Login</Link>
+                        <Link to="/signup" className="button--primary ml-4 lg:py-1.6 px-5.5"> Create Account</Link>
+                    </div>
+            }
+
+
             <MobileMenu/>
 
         </div>

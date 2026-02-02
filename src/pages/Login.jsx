@@ -16,7 +16,7 @@ export default function Login() {
           const res = await login(data);
           console.log(res.data);
           alert("Login Successful!");
-
+          localStorage.setItem("token:", res.data.access_token);
           navigate("/")
           // redirect user or save token
         } catch (err) {
@@ -63,7 +63,7 @@ export default function Login() {
                         <p className="text-[12px]">Forgot Password?</p>
                     </div>
                     <div className="w-full flex-col gap-[1rem] flex-center">
-                        <button type="submit" className="button--primary w-[300px] " disabled={isSubmitting}>
+                            <button type="submit" className="button--primary w-[300px] " disabled={isSubmitting}>
                               {isSubmitting ? "Signing in..." : "Sign In"}
                         </button>
 
