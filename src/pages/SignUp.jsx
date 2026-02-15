@@ -14,7 +14,7 @@ export default function SignUp() {
         reset,
             formState:{errors, isSubmitting},
             getValues} = useForm();
-    // const [error, setError] = useState(null);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
     const onSubmit = async (data) => {
         console.log("FORM DATA:", data);

@@ -22,8 +22,11 @@ class Config:
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
 
     # CORS CONFIGURATION
-    CORS_SUPPORTS_CREDENTIALS = False
+    CORS_SUPPORTS_CREDENTIALS = True
     CORS_EXPOSE_HEADERS = ["Content-Type", "Authorization"]
+    CORS_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
+    CORS_ALLOW_HEADERS = ["Content-Type", "Authorization"]
+    CORS_METHODS = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 
     # Database
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')

@@ -56,15 +56,15 @@ def register():
         return jsonify(errors=err.messages,
                        valid_data=err.valid_data), 400
     else:
-        registration_message = create_user(validated_json_data)
+        return create_user(validated_json_data)
 
-        # if registration is Successful
-        if registration_message["code"] == 201:
-
-             return confirm_login(validated_json_data)
-        else:
-
-            return success_response(registration_message)
+        # # if registration is Successful
+        # if registration_message["status_code"] == 200:
+        #
+        #      return confirm_login(validated_json_data)
+        # else:
+        #
+        #     return success_response(registration_message)
 
 
 @api_bp.route("/login", methods=["POST"])
