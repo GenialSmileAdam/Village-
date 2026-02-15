@@ -6,24 +6,22 @@ from dotenv import load_dotenv
 import os
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+import limits.storage as storage
 
 load_dotenv()
 
 
 class Base(DeclarativeBase):
     pass
-
 limiter = Limiter(get_remote_address,
-                  default_limits=["200 per day", "50 per hour"],
-                  )
+                  storage_options={"socket_connect_timeout": 30})
 db = SQLAlchemy(model_class=Base)
 jwt = JWTManager()
 
 if os.environ.get("FLASK_ENV") == "development":
     # Development: allow everything from localhost
     cors = CORS(
-                origins=["http://localhost:5173", "http://172.21.0.1:5173/"],
-                supports_credentials=True)
+                origins=["http://localhost:5173", "http://172.21.0.1:5173/"])
 else:
 # Production: strict configuration
     cors = CORS(

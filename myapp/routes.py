@@ -1,7 +1,7 @@
 from __future__ import annotations
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from .models import db, User
-from sqlalchemy import  select
+from sqlalchemy import  select, text
 from .functions import create_user, confirm_login
 from .schemas import RegistrationSchema, ValidationError, LoginSchema
 from pprint import pprint
@@ -18,30 +18,27 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 # load a user with jwt
 @jwt.user_identity_loader
 def user_identity_lookup(user):
-    return str(user.id)
+    # Handle both User objects and user IDs
+    if isinstance(user, User):
+        return str(user.id)
+    elif hasattr(user, 'id'):  # Just in case
+        return str(user.id)
+    else:  # It's already an ID
+        return str(user)
 
 
 @jwt.user_lookup_loader
 def user_lookup_callback(_jwt_header, jwt_data):
-    identity = int(jwt_data["sub"])
-    return db.session.scalar(select(User).where(User.id == identity))
+    identity = jwt_data["sub"]  # This will be the user ID as string
 
-
-# this callback refreshes any token within 30 minutes of
-# expiring
-@api_bp.after_request
-def refresh_expiring_jwt(response):
+    # Convert string ID back to integer for query
     try:
-        exp_timestamp = get_jwt()["exp"]
-        now = datetime.now(timezone.utc)
-        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
-        if target_timestamp > exp_timestamp:
-            access_token = create_access_token(identity=get_jwt_identity())
-            set_access_cookies(response, access_token)
-        return response
-    except (RuntimeError, KeyError):
-        # Case where there is not a valid JWT. Just return the original response
-        return response
+        user_id = int(identity)
+    except (ValueError, TypeError):
+        # If identity isn't a number (e.g., email), handle differently
+        return None
+
+    return db.session.scalar(select(User).where(User.id == user_id))
 
 
 # -------------API Routes -------------------
@@ -50,13 +47,6 @@ def refresh_expiring_jwt(response):
 @limiter.limit("1/second")
 def register():
     user_data = request.get_json()
-    pprint(user_data)
-    # Debug: Print exact values with repr() to see hidden characters
-    # print("DEBUG - Raw JSON received:", user_data)
-    # print(f"DEBUG - password: '{user_data.get('password')}' (type: {type(user_data.get('password'))})")
-    # print(f"DEBUG - confirm_password: '{user_data.get('confirm_password')}' (type: {type(user_data.get('confirm_password'))})")
-    # print(f"DEBUG - Are they equal? {user_data.get('password') == user_data.get('confirm_password')}")
-    # print(f"DEBUG - Are they identical? {user_data.get('password') is user_data.get('confirm_password')}")
 
     schema = RegistrationSchema()
 
@@ -114,3 +104,41 @@ def logout():
         })
     unset_jwt_cookies(response)
     return response
+
+
+@api_bp.route("/health", methods=["GET"])
+def health_check():
+    """
+    Health check endpoint for monitoring and load balancers.
+    Checks database connectivity and basic app status.
+    """
+    try:
+        # Check database connection
+        db.session.execute(text("SELECT 1"))
+
+        return jsonify({
+            "status": "healthy",
+            "service": "auth-api",
+            "timestamp": datetime.now(),
+            "database": "connected"
+        }), 200
+
+    except Exception as e:
+        current_app.logger.error(f"Health check failed: {str(e)}")
+
+        return jsonify({
+            "status": "unhealthy",
+            "service": "auth-api",
+            "timestamp": datetime.now(),
+            "database": "disconnected",
+            "error": "Database connection failed"
+        }), 503
+
+# this route refreshes access tokens
+# Refresh tokens to access this route
+@api_bp.route("/refresh", methods = ["POST"])
+@jwt_required(refresh=True)
+def refresh():
+    identity = get_jwt_identity()
+    access_token = create_access_token(identity=identity)
+    return jsonify(access_token=access_token)
