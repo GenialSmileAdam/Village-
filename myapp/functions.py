@@ -2,7 +2,7 @@ from flask import current_app, jsonify
 from .models import db, User
 from sqlalchemy import exists, select
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, set_access_cookies, create_refresh_token
+from flask_jwt_extended import create_access_token, create_refresh_token
 
 
 # functions for object manipulation
