@@ -4,6 +4,7 @@ import SignUp from './pages/SignUp';
 import Login from './pages/Login';
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
 export default function App() {
     return (
 
@@ -13,6 +14,7 @@ export default function App() {
                 <Route path="/" element={<Home/>} />
                 <Route path="/signup" element={<SignUp/>}/>
                 <Route path="/login" element={<Login/>}/>
+                <Route path="/dashboard" element={<Dashboard/>}/>
             </Routes>
             <Footer/>
         </BrowserRouter>
