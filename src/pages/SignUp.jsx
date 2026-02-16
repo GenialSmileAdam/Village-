@@ -14,7 +14,7 @@ export default function SignUp() {
         reset,
             formState:{errors, isSubmitting},
             getValues} = useForm();
-    const [error, setError] = useState(null);
+    // const [error, setError] = useState(null);
     const navigate = useNavigate();
     const onSubmit = async (data) => {
         console.log("FORM DATA:", data);
@@ -44,7 +44,6 @@ export default function SignUp() {
                 passions and interests.</p>
             </div>
             <div className="py-16 margin lg:w-1/2">
-                {error && <p style={{ color: 'red' }}>{error}</p>}
                 <h2>Create Account</h2>
                 <p className="mt-3">Get ready to find your village people</p>
                 <form className="mt-9 form" onSubmit={handleSubmit(onSubmit)}>
