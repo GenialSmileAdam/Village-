@@ -2,13 +2,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { login } from "../api/auth";
 import Head from "../components/Head.jsx";
-import { useAuth } from "../Context/AuthContext"; // Add this import
+import { useAuth } from "../context/AuthContext"; // Fixed import
 import { useState } from "react";
 
 export default function Login() {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
     const navigate = useNavigate();
-    const { setUser } = useAuth(); // Get setUser from auth context
+    const { fetchUser } = useAuth(); // Get fetchUser from context
     const [loginError, setLoginError] = useState("");
 
     const onSubmit = async (data) => {
@@ -16,15 +16,10 @@ export default function Login() {
 
         try {
             const res = await login(data);
-            console.log(res.data);
-
-            // Store token
             localStorage.setItem("token", res.data.access_token);
 
-            // Update user state in context
-            if (res.data.user) {
-                setUser(res.data.user);
-            }
+            // Fetch user data immediately after login
+            await fetchUser();
 
             alert("Login Successful!");
             navigate("/");
@@ -34,6 +29,7 @@ export default function Login() {
             setLoginError(errorMessage);
         }
     };
+    
 
     return (
         <main className="lg:flex">
