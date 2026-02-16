@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import api from "../api/axios";
 
 const AuthContext = createContext();
@@ -7,26 +7,41 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    const checkAuth = useCallback(async () => {
         const token = localStorage.getItem("token");
 
         if (!token) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setLoading(false);
             return;
         }
 
-        const fetchUser = async () => {
-            const response = await api.get("/get_user")
-                .catch(() => {
-                localStorage.removeItem("token");
-                setUser(null);
-            });
-            if (response) setUser(response.data);
+        try {
+            const response = await api.get("/get_user");
+            setUser(response.data);
+        } catch (error) {
+            console.error("Auth check failed:", error);
+            localStorage.removeItem("token");
+            setUser(null);
+        } finally {
             setLoading(false);
-        };
-        fetchUser();
+        }
     }, []);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const verifyAuth = async () => {
+            if (isMounted) {
+                await checkAuth();
+            }
+        };
+
+        verifyAuth();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [checkAuth]);
 
     return (
         <AuthContext.Provider value={{ user, setUser, loading }}>
@@ -35,4 +50,10 @@ export function AuthProvider({ children }) {
     );
 }
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error("useAuth must be used within an AuthProvider");
+    }
+    return context;
+};
