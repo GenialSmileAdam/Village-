@@ -83,24 +83,18 @@ export default function Login() {
                         )}
                     </div>
 
-                    <div className="flex justify-between mt-[-1em]">
-                        <div className="flex">
-                            <input type="checkbox" {...register("remember_me")} />
-                            <p className="text-[14px] ml-3">Remember Me</p>
-                        </div>
-                        <p className="text-[12px]">Forgot Password?</p>
-                    </div>
 
-                    <div className="w-full flex-col gap-[1rem] flex-center">
+
+                    <div className="w-full flex-col gap-[1rem] flex-center mt-3">
                         <button
                             type="submit"
-                            className="button--primary w-[300px]"
+                            className="button--primary w-[400px] h-[50px]"
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? "Signing in..." : "Sign In"}
                         </button>
 
-                        <div className="w-[300px] flex items-center gap-3">
+                        <div className="w-[300px] flex items-center gap-3 my-3">
                             <div className="flex-1 h-px bg-gray-300"></div>
                             <span className="text-[var(--color-text-primary)]">OR</span>
                             <div className="flex-1 h-px bg-gray-300"></div>
@@ -108,7 +102,7 @@ export default function Login() {
 
                         <button
                             type="button"
-                            className="button--primary w-[300px] bg-white border-0 flex items-center gap-3"
+                            className="button--primary w-[400px] h-[50px] bg-white border-0  flex-center gap-3"
                         >
                             <FcGoogle className="text-xl" />
                             Continue with Google

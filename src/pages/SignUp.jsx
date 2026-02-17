@@ -194,11 +194,11 @@ export default function SignUp() {
                         <p className="text-red-500 text-sm mt-1">{errors.agree_to_terms.message}</p>
                     )}
 
-                    <div className="w-full flex-center mt-6">
+                    <div className="w-full flex-center mt-4 ">
                         <button
                             disabled={isSubmitting || successMessage}
                             type="submit"
-                            className="button--primary w-[300px]"
+                            className="button--primary w-[400px] h-[50px]"
                         >
                             {isSubmitting ? "Creating Account..." : "Create Account"}
                         </button>
