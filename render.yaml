@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: village-app
+    runtime: python
+    buildCommand: |
+      python --version
+      pip install --upgrade pip
+      pip install -r requirements.txt
+    startCommand: gunicorn 'app:create_app("production")' --workers 4 --bind 0.0.0.0:$PORT
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PYTHON_VERSION
+        value: 3.11.11
