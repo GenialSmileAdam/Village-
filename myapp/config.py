@@ -12,11 +12,17 @@ basedir= Path(__file__).parent.absolute()
 class Config:
     """Base Configuration"""
     # Security
-    SECRET_KEY =  os.environ.get('SECRET_KEY',secrets.token_hex(32))
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    if not SECRET_KEY:
+        raise ValueError("SECRET_KEY is required for production")
+
     DEBUG = os.environ.get('FLASK_ENV') == 'development'
 
     # JWT TOKEN
-    JWT_SECRET_KEY =os.environ.get('JWT_SECRET_KEY',secrets.token_hex(32))
+
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
+    if not JWT_SECRET_KEY:
+        raise ValueError("JWT_SECRET_KEY is required for production")
     JWT_TOKEN_LOCATION = ["headers"]
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
@@ -63,10 +69,8 @@ class ProductionConfig(Config):
     # SECURITY
     SECRET_KEY = os.environ['SECRET_KEY']  # Must be set
 
-
-
     # CORS - restrict to your frontend
-    # CORS_ORIGINS = ['https://yourdomain.com']
+    CORS_ORIGINS =  os.environ.get('CORS_ORIGINS')
 
     SQLALCHEMY_DATABASE_URI =  os.environ.get("DATABASE_URL")
     SQLALCHEMY_ENGINE_OPTIONS = {

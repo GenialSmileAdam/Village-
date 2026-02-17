@@ -21,20 +21,7 @@ limiter = Limiter(get_remote_address,
                   storage_options={"socket_connect_timeout": 30})
 db = SQLAlchemy(model_class=Base)
 jwt = JWTManager()
-
-
-if os.environ.get("FLASK_ENV") == "development":
-    # Development: allow everything from localhost
-    cors = CORS()
-else:
-# Production: strict configuration
-    cors = CORS(
-                origins=["https://yourdomain.com"],
-                methods=["GET", "POST", "PUT", "DELETE"],
-                allow_headers=["Content-Type", "Authorization"],
-                supports_credentials=True,
-                max_age=3600
-                )
+cors = CORS()
 
 
 # Mock Redis for JWT blocklist only
