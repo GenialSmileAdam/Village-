@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { signup } from "../api/auth";
 import Head from "../components/Head.jsx";
 import { useState } from "react";
-// import { useAuth } from "../context/AuthContext"; // Uncomment if you want auto-login
 
 export default function SignUp() {
     const {
@@ -17,7 +16,6 @@ export default function SignUp() {
     const [signupError, setSignupError] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null);
     const navigate = useNavigate();
-    // const { setUser } = useAuth(); // Uncomment for auto-login
 
     const onSubmit = async (data) => {
         // Remove confirm_password before sending to API
@@ -32,16 +30,6 @@ export default function SignUp() {
 
             // Show success message
             setSuccessMessage("Account created successfully!");
-
-            // // Option 1: Auto-login (if your API returns token)
-            // if (res.data.access_token) {
-            //     localStorage.setItem("token", res.data.access_token);
-            //     if (res.data.user) setUser(res.data.user);
-            //     navigate("/");
-            // } else {
-            //     // Option 2: Redirect to log in
-            //     setTimeout(() => navigate("/login"), 2000);
-            // }
 
             // Option 2: Redirect to log in (safer)
             setTimeout(() => navigate("/login"), 2000);

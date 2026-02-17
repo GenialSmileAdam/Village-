@@ -2,50 +2,57 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { login } from "../api/auth";
 import Head from "../components/Head.jsx";
-import { useAuth } from "../context/AuthContext"; // Fixed import
+import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
+import { FcGoogle } from "react-icons/fc"; // Google icon
+
 
 export default function Login() {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
     const navigate = useNavigate();
-    const { fetchUser } = useAuth(); // Get fetchUser from context
+    const { fetchUser } = useAuth();
     const [loginError, setLoginError] = useState("");
 
     const onSubmit = async (data) => {
-        setLoginError("");
-
         try {
             const res = await login(data);
             localStorage.setItem("token", res.data.access_token);
-
-            // Fetch user data immediately after login
             await fetchUser();
-
-            alert("Login Successful!");
             navigate("/");
         } catch (err) {
-            console.error("API ERROR:", err.response || err);
-            const errorMessage = err.response?.data?.message || "Login failed. Please check your credentials.";
-            setLoginError(errorMessage);
+            // console.log("ERROR RESPONSE DATA:", err.response?.data.message);
+            // console.log("TYPE OF ERROR:", typeof err.response?.data);
+            const errorData = JSON.stringify(err.response?.data.message.message);
+
+            let finalerror = errorData.replace(/^"|"$/g, '');
+
+            if (errorData) {
+                setLoginError(finalerror);
+
+            } else {
+                setLoginError("Invalid email or password");
+            }
         }
     };
-    
 
     return (
         <main className="lg:flex">
             <Head title="Login" />
+
             <div className="auth-panel lg:w-1/2 bg-[var(--color-secondary)] flex-col flex-center">
                 <h2 className="stroke-0 text-black font-[200]">Welcome Back</h2>
                 <p className="text-center mt-4 text-[20px] font-secondary text-black">
                     Sign in to reconnect with your community and continue meaningful conversations.
                 </p>
             </div>
+
             <div className="py-16 margin lg:w-1/2">
                 <h2>Sign In</h2>
                 <p className="mt-3">Enter your credentials to access your account</p>
 
                 {loginError && (
                     <div className="mt-4 p-3 bg-red-100 text-red-700 rounded">
+                        {/*{console.log("RENDERING ERROR:", loginError, typeof loginError)}*/}
                         {loginError}
                     </div>
                 )}
@@ -59,7 +66,9 @@ export default function Login() {
                             placeholder="Enter Username or Email"
                             {...register("email", { required: "Email is required" })}
                         />
-                        {errors.email && <p className="text-red-500 text-sm mt-2">{errors.email.message}</p>}
+                        {errors.email && (
+                            <p className="text-red-500 text-sm mt-2">{String(errors.email.message)}</p>
+                        )}
                     </div>
 
                     <div className="form_input">
@@ -69,7 +78,9 @@ export default function Login() {
                             className="border"
                             {...register("password", { required: "Password is required" })}
                         />
-                        {errors.password && <p className="text-red-500 text-sm mt-2">{errors.password.message}</p>}
+                        {errors.password && (
+                            <p className="text-red-500 text-sm mt-2">{String(errors.password.message)}</p>
+                        )}
                     </div>
 
                     <div className="flex justify-between mt-[-1em]">
@@ -97,9 +108,9 @@ export default function Login() {
 
                         <button
                             type="button"
-                            className="button--primary w-[300px] bg-white border-0"
-                            onClick={() => window.location.href = "/auth/google"} // Or your Google OAuth URL
+                            className="button--primary w-[300px] bg-white border-0 flex items-center gap-3"
                         >
+                            <FcGoogle className="text-xl" />
                             Continue with Google
                         </button>
                     </div>

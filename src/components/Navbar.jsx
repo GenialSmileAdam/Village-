@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Menu, MenuButton, MenuItems, MenuItem, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { useAuth } from "../context/AuthContext"; // Fixed import path
+import api from "../api/axios";
 import {
     FaBars,
     FaTimes,
@@ -117,11 +118,17 @@ export default function Navbar() {
     const { user, setUser } = useAuth();
     const navigate = useNavigate();
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        try {
+            await api.delete("/logout");
+        } catch (e) {
+            console.error(e);
+        }
         localStorage.removeItem("token");
         setUser(null);
         navigate("/");
     };
+
 
     return (
         <div className="flex justify-between items-center bg-white px-(--space-margin) py-3">
