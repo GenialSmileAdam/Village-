@@ -1,0 +1,12 @@
+*.py
+*.pyc
+__pycache__/
+myapp/
+instance/
+venv/
+requirements.txt
+runtime.txt
+Procfile
+render.yaml
+wsgi.py
+run.py
