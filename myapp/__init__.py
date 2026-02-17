@@ -29,7 +29,12 @@ def create_app(config_name=None):
     # initialize extensions
     from .extensions import db,  cors, jwt, limiter
     db.init_app(app)
-    cors.init_app(app)
+    cors.init_app(app,
+        origins=app.config['CORS_ORIGINS'],
+        allow_headers=app.config['CORS_ALLOW_HEADERS'],
+        supports_credentials=app.config['CORS_SUPPORTS_CREDENTIALS'],
+        methods=app.config.get('CORS_METHODS', ["GET", "POST", "PUT", "DELETE"]))
+
     jwt.init_app(app)
     limiter.init_app(app)
 

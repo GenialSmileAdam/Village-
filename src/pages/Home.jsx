@@ -4,9 +4,11 @@ import { FaMapLocationDot, FaUsers, FaStar, FaTrophy, FaHeart, FaTree, FaSeedlin
 import {FaHome} from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Head  from "../components/Head.jsx"
+import { useAuth } from "../context/AuthContext"; // Fixed import path
 
 
 function Hero(){
+    const {user} = useAuth();
     return(
         <section className="h-92.5 flex flex-col justify-center items-start gap-3 overflow-hidden lg:h-[90vh]">
             <Head title="Home" />
@@ -23,6 +25,11 @@ function Hero(){
 
             <h1>Find your people, <br/> Find your village</h1>
             <p>Join a community where you find people <br/> with your similar interests </p>
+            {
+                user ?
+                    <Link to="/dashboard" className="button--primary mt-5"> Go to the Dashboard</Link> :
+                    <Link to="/signup" className="button--primary mt-5"> Join a Village!</Link>
+            }
         </section>
     )
 }

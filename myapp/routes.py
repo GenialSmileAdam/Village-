@@ -6,11 +6,10 @@ from .functions import create_user, confirm_login
 from .schemas import RegistrationSchema, ValidationError, LoginSchema
 from pprint import pprint
 from flask_jwt_extended import (jwt_required, get_jwt_identity, current_user, get_jwt,
-                                create_access_token, set_access_cookies,
-                                unset_jwt_cookies)
-from .extensions import jwt, limiter
-from datetime import timezone, timedelta, datetime
-from .functions import  error_response, success_response
+                                create_access_token)
+from .extensions import jwt, limiter, jwt_redis_blocklist
+from datetime import  timedelta, datetime
+from .functions import  error_response
 # Blueprint
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -18,45 +17,40 @@ api_bp = Blueprint("api", __name__, url_prefix="/api")
 # load a user with jwt
 @jwt.user_identity_loader
 def user_identity_lookup(user):
-    return str(user.id)
+    # Handle both User objects and user IDs
+    if isinstance(user, User):
+        return str(user.id)
+    elif hasattr(user, 'id'):  # Just in case
+        return str(user.id)
+    else:  # It's already an ID
+        return str(user)
 
 
 @jwt.user_lookup_loader
 def user_lookup_callback(_jwt_header, jwt_data):
-    identity = int(jwt_data["sub"])
-    return db.session.scalar(select(User).where(User.id == identity))
+    identity = jwt_data["sub"]  # This will be the user ID as string
 
-
-# this callback refreshes any token within 30 minutes of
-# expiring
-@api_bp.after_request
-def refresh_expiring_jwt(response):
+    # Convert string ID back to integer for query
     try:
-        exp_timestamp = get_jwt()["exp"]
-        now = datetime.now(timezone.utc)
-        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
-        if target_timestamp > exp_timestamp:
-            access_token = create_access_token(identity=get_jwt_identity())
-            set_access_cookies(response, access_token)
-        return response
-    except (RuntimeError, KeyError):
-        # Case where there is not a valid JWT. Just return the original response
-        return response
+        user_id = int(identity)
+    except (ValueError, TypeError):
+        # If identity isn't a number (e.g., email), handle differently
+        return None
 
+    return db.session.scalar(select(User).where(User.id == user_id))
 
+# Callback function to check if a JWT exists in the redis blocklist
+@jwt.token_in_blocklist_loader
+def check_if_token_is_revoked(jwt_header, jwt_payload: dict):
+    jti = jwt_payload["jti"]
+    token_in_redis = jwt_redis_blocklist.get(jti)
+    return token_in_redis is not None
 # -------------API Routes -------------------
 
 @api_bp.route("/register", methods=["POST"])
 @limiter.limit("1/second")
 def register():
     user_data = request.get_json()
-    pprint(user_data)
-    # Debug: Print exact values with repr() to see hidden characters
-    # print("DEBUG - Raw JSON received:", user_data)
-    # print(f"DEBUG - password: '{user_data.get('password')}' (type: {type(user_data.get('password'))})")
-    # print(f"DEBUG - confirm_password: '{user_data.get('confirm_password')}' (type: {type(user_data.get('confirm_password'))})")
-    # print(f"DEBUG - Are they equal? {user_data.get('password') == user_data.get('confirm_password')}")
-    # print(f"DEBUG - Are they identical? {user_data.get('password') is user_data.get('confirm_password')}")
 
     schema = RegistrationSchema()
 
@@ -66,15 +60,15 @@ def register():
         return jsonify(errors=err.messages,
                        valid_data=err.valid_data), 400
     else:
-        registration_message = create_user(validated_json_data)
+        return create_user(validated_json_data)
 
-        # if registration is Successful
-        if registration_message["code"] == 201:
-
-             return confirm_login(validated_json_data)
-        else:
-
-            return success_response(registration_message)
+        # # if registration is Successful
+        # if registration_message["status_code"] == 200:
+        #
+        #      return confirm_login(validated_json_data)
+        # else:
+        #
+        #     return success_response(registration_message)
 
 
 @api_bp.route("/login", methods=["POST"])
@@ -105,15 +99,25 @@ def get_user():
                    full_name=current_user.full_name,
                    username=current_user.username), 200
 
-@api_bp.route("/logout", methods= ["GET"])
-@jwt_required()
+@api_bp.route("/logout", methods= ["DELETE"])
+@jwt_required(verify_type=False)
 def logout():
-    response = jsonify(
-        {
-            "msg": f"{current_user.full_name} has logged out Successfully"
-        })
-    unset_jwt_cookies(response)
-    return response
+    token = get_jwt()
+    jti = token["jti"]
+    ttype = token["type"]
+    response_data = {
+        "msg": f"{ttype.capitalize()} token successfully revoked"
+    }
+
+    jwt_redis_blocklist.set(jti, "", ex=timedelta(hours=1))
+
+    if current_user:
+        response_data["user"] = {
+            "full_name": current_user.full_name,
+            "message": f"{current_user.full_name} has logged out successfully"
+        }
+    # Returns "Access token revoked" or "Refresh token revoked"
+    return jsonify(response_data)
 
 
 @api_bp.route("/health", methods=["GET"])
@@ -143,3 +147,12 @@ def health_check():
             "database": "disconnected",
             "error": "Database connection failed"
         }), 503
+
+# this route refreshes access tokens
+# Refresh tokens to access this route
+@api_bp.route("/refresh", methods = ["POST"])
+@jwt_required(refresh=True)
+def refresh():
+    identity = get_jwt_identity()
+    access_token = create_access_token(identity=identity)
+    return jsonify(access_token=access_token)

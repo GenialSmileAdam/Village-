@@ -2,7 +2,7 @@ from flask import current_app, jsonify
 from .models import db, User
 from sqlalchemy import exists, select
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, set_access_cookies
+from flask_jwt_extended import create_access_token, create_refresh_token
 
 
 # functions for object manipulation
@@ -31,28 +31,29 @@ def create_user(user_data):
 
                 db.session.add(new_user)
                 db.session.commit()
-                return {"message": f"User {full_name} has been Registered",
-                        "status": "Success",
-                        "code": 201}
+                response_data  = {"message": f"User {full_name} has been Registered"}
+
+                return success_response(response_data, add_access_token=True, user= new_user)
             except Exception as e:
                 db.session.rollback()
 
                 current_app.logger.error(f"Database error:"
                                          f"{str(e)}")
-                return {"message": f"error creating user: {str(e)}",
-                        "status": "error",
-                        "code": 500}
+
+                response_data = {"message": f"error creating user: {str(e)}"}
+
+                return error_response(response_data, status_code= 500)
 
         else:
 
-            return {"message": "Username is already taken. choose another username ",
-                    "status": "error",
-                    "code": 403}
+            response_data = {"message": "Username is already taken. choose another username "}
+
+            return error_response(response_data, status_code= 403)
 
     else:
-        return {"message": "User already exists. Log in instead",
-                "status": "error",
-                "code": 403}
+        response_data = {"message":  "User already exists. Log in instead"}
+
+        return error_response(response_data, status_code=403)
 
 
 def confirm_login(user_data):
@@ -69,12 +70,8 @@ def confirm_login(user_data):
 
         if check_password_hash(user.password, password):
 
-            access_token = create_access_token(identity=user)
 
-            response_data = {"access_token": access_token}
-
-
-            return success_response(response_data, add_access_token=True)
+            return success_response( add_access_token=True, user = user)
         else:
             response_data = {"message": "User password is incorrect, Try again"}
 
@@ -85,18 +82,27 @@ def confirm_login(user_data):
         return error_response(response_data, status_code=404)
 
 
-def success_response(data= None, message= "Success", status_code= 200, add_access_token = False):
+def success_response(data= None, message= "Success", status_code= 200,
+                     add_access_token = False,
+                     user= None):
     """Standard Success response"""
     response = {
-        "success": True,
         "message":message,
         "data":data,
     }
 
-    response_data =  jsonify(response)
-    if add_access_token:
-        set_access_cookies(response_data, data["access_token"])
 
+    if add_access_token:
+
+        access_token = create_access_token(user)
+        refresh_token = create_refresh_token(user)
+
+        response.update({
+            "access_token": access_token,
+            "refresh_token": refresh_token
+        })
+
+    response_data = jsonify(response)
     return response_data, status_code
 
 def error_response(message="Error", errors=None, status_code=400):
