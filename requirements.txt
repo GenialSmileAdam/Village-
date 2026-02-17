@@ -31,6 +31,5 @@ psycopg2-binary~=2.9.10
 PyJWT~=2.10.1
 Flask-JWT-Extended~=4.7.1
 dotenv~=0.9.9
-psycopg2-binary==2.9.9
 flask-cors~=6.0.2
 Flask-Limiter~=4.1.1
