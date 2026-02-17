@@ -32,7 +32,7 @@ class User(db.Model):
     __tablename__ = "user_table"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    full_name:Mapped[int]
+    full_name:Mapped[str]
     username: Mapped[str] = mapped_column(unique=True)
     email: Mapped[str] = mapped_column(unique=True)
     is_admin: Mapped[Optional[bool]]

@@ -5,6 +5,7 @@ from myapp import db
 
 app = create_app("production")
 with app.app_context():
+    db.drop_all()
     db.create_all()
     app.logger.info("Database tables checked/created successfully")
 
