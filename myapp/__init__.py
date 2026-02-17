@@ -27,7 +27,8 @@ def create_app(config_name=None):
     app.cli.add_command(create_admin_command)
 
     # initialize extensions
-    from .extensions import db,  cors, jwt, limiter
+    from .extensions import db, cors, jwt, limiter, get_redis_client
+
     db.init_app(app)
     cors.init_app(app,
         origins=app.config['CORS_ORIGINS'],
@@ -37,6 +38,15 @@ def create_app(config_name=None):
 
     jwt.init_app(app)
     limiter.init_app(app)
+    with app.app_context():
+        redis_client = get_redis_client()
+
+
+        from . import extensions as extensions_module
+        extensions_module.jwt_redis_blocklist = redis_client
+
+        if app.config['RATELIMIT_STORAGE_URI'] != 'memory://':
+            limiter.storage_uri = app.config['RATELIMIT_STORAGE_URI']
 
     # Register routes/blueprints
     from .routes import  api_bp

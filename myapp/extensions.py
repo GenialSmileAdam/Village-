@@ -7,29 +7,26 @@ import os
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import redis
-import time as time_module  # Import with an alias to avoid confusion
+import time as time_module
 from datetime import timedelta
 from typing import Optional, Dict, Any
-
 
 load_dotenv()
 
 
 class Base(DeclarativeBase):
     pass
-limiter = Limiter(get_remote_address,
-                  storage_options={"socket_connect_timeout": 30})
+
+
+limiter = Limiter(
+    get_remote_address,
+    storage_options={"socket_connect_timeout": 30}
+)
 db = SQLAlchemy(model_class=Base)
 jwt = JWTManager()
 cors = CORS()
 
 
-# Mock Redis for JWT blocklist only
-
-
-
-
-# Mock Redis for JWT blocklist only
 class JWTBlocklistMock:
     """
     Complete mock for JWT blocklist functionality
@@ -49,22 +46,19 @@ class JWTBlocklistMock:
         Add JTI to blocklist
         Handles ex parameter for expiration
         """
-        # Check for ex parameter (expiration in seconds)
         ex = kwargs.get('ex')
         if ex:
-            # Handle both timedelta and integer/float
             if isinstance(ex, timedelta):
                 ex_seconds = int(ex.total_seconds())
             else:
                 ex_seconds = int(ex)
             return self.setex(key, ex_seconds, value)
 
-        # Simple set without expiration
         self._blocklist[key] = value
         return True
 
     def setex(self, key: str, seconds: int, value: str) -> bool:
-        """Add JTI to blocklist with expiration (time in seconds)"""
+        """Add JTI to blocklist with expiration"""
         self._blocklist[key] = value
         self._expiry[key] = time_module.time() + seconds
         return True
@@ -93,15 +87,46 @@ class JWTBlocklistMock:
         for key in expired_keys:
             del self._blocklist[key]
             del self._expiry[key]
-try:
-    jwt_redis_blocklist = redis.StrictRedis(
-        host="localhost",
-        port=6379,
-        db=0,
-        decode_responses=True,
-        socket_connect_timeout=2
-    )
-    jwt_redis_blocklist.ping()  # Test connection
-except:
-    # Redis unavailable - use mock
-    jwt_redis_blocklist = JWTBlocklistMock()
+
+
+def get_redis_client():
+    """Get Redis client from app config or return mock"""
+    try:
+        # Try to get Redis URL from environment or config
+        redis_url = os.environ.get('REDIS_URL', 'redis://localhost:6379')
+
+        # Try to get from app config if in app context
+        try:
+            from flask import current_app
+            redis_url = current_app.config.get('REDIS_URL', redis_url)
+        except (RuntimeError, ImportError):
+            # Outside app context, use env var
+            pass
+
+        if redis_url == 'redis://localhost:6379':
+            # Try localhost connection
+            client = redis.StrictRedis(
+                host="localhost",
+                port=6379,
+                db=0,
+                decode_responses=True,
+                socket_connect_timeout=2
+            )
+        else:
+            # Use URL from config/environment
+            client = redis.from_url(
+                redis_url,
+                decode_responses=True,
+                socket_connect_timeout=2
+            )
+
+        client.ping()  # Test connection
+        print(f"✅ Redis connected successfully using {redis_url}")
+        return client
+    except Exception as e:
+        print(f"⚠️ Redis connection failed: {e}, using mock")
+        return JWTBlocklistMock()
+
+
+# Initialize with mock, will be updated in create_app
+jwt_redis_blocklist = JWTBlocklistMock()
