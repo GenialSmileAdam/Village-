@@ -8,7 +8,7 @@ from pprint import pprint
 from flask_jwt_extended import (jwt_required, get_jwt_identity, current_user, get_jwt,
                                 create_access_token, set_access_cookies,
                                 unset_jwt_cookies)
-from .extensions import jwt, limiter
+from .extensions import jwt, limiter, jwt_redis_blocklist
 from datetime import timezone, timedelta, datetime
 from .functions import  error_response, success_response
 # Blueprint
@@ -40,7 +40,12 @@ def user_lookup_callback(_jwt_header, jwt_data):
 
     return db.session.scalar(select(User).where(User.id == user_id))
 
-
+# Callback function to check if a JWT exists in the redis blocklist
+@jwt.token_in_blocklist_loader
+def check_if_token_is_revoked(jwt_header, jwt_payload: dict):
+    jti = jwt_payload["jti"]
+    token_in_redis = jwt_redis_blocklist.get(jti)
+    return token_in_redis is not None
 # -------------API Routes -------------------
 
 @api_bp.route("/register", methods=["POST"])
@@ -95,15 +100,25 @@ def get_user():
                    full_name=current_user.full_name,
                    username=current_user.username), 200
 
-@api_bp.route("/logout", methods= ["GET"])
-@jwt_required()
+@api_bp.route("/logout", methods= ["DELETE"])
+@jwt_required(verify_type=False)
 def logout():
-    response = jsonify(
-        {
-            "msg": f"{current_user.full_name} has logged out Successfully"
-        })
-    unset_jwt_cookies(response)
-    return response
+    token = get_jwt()
+    jti = token["jti"]
+    ttype = token["type"]
+    response_data = {
+        "msg": f"{ttype.capitalize()} token successfully revoked"
+    }
+
+    jwt_redis_blocklist.set(jti, "", ex=timedelta(hours=1))
+
+    if current_user:
+        response_data["user"] = {
+            "full_name": current_user.full_name,
+            "message": f"{current_user.full_name} has logged out successfully"
+        }
+    # Returns "Access token revoked" or "Refresh token revoked"
+    return jsonify(response_data)
 
 
 @api_bp.route("/health", methods=["GET"])
