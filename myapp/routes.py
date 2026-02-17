@@ -6,11 +6,10 @@ from .functions import create_user, confirm_login
 from .schemas import RegistrationSchema, ValidationError, LoginSchema
 from pprint import pprint
 from flask_jwt_extended import (jwt_required, get_jwt_identity, current_user, get_jwt,
-                                create_access_token, set_access_cookies,
-                                unset_jwt_cookies)
+                                create_access_token)
 from .extensions import jwt, limiter, jwt_redis_blocklist
-from datetime import timezone, timedelta, datetime
-from .functions import  error_response, success_response
+from datetime import  timedelta, datetime
+from .functions import  error_response
 # Blueprint
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
