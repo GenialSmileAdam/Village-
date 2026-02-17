@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, MenuButton, MenuItems, MenuItem, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import { useAuth } from "../context/AuthContext"; // Fixed import path
+import { useAuth } from "../context/AuthContext.jsx"; // Fixed import path
 import api from "../api/axios";
 import {
     FaBars,
