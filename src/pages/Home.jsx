@@ -4,7 +4,7 @@ import { FaMapLocationDot, FaUsers, FaStar, FaTrophy, FaHeart, FaTree, FaSeedlin
 import {FaHome} from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Head  from "../components/Head.jsx"
-import { useAuth } from "../context/AuthContext.jsx"; // Fixed import path
+import { useAuth } from "../Context/AuthContext.jsx"; // Fixed import path
 
 
 function Hero(){

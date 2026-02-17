@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { login } from "../api/auth";
 import Head from "../components/Head.jsx";
-import { useAuth } from "../context/AuthContext.jsx";
+import { useAuth } from "../Context/AuthContext.jsx";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc"; // Google icon
 
