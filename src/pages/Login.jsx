@@ -88,7 +88,7 @@ export default function Login() {
                     <div className="w-full flex-col gap-[1rem] flex-center mt-3">
                         <button
                             type="submit"
-                            className="button--primary w-[400px] h-[50px]"
+                            className="button--primary h-[50px] w-[350px] min-w-0 sm:w-100 sm:min-w-85 "
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? "Signing in..." : "Sign In"}
@@ -102,7 +102,7 @@ export default function Login() {
 
                         <button
                             type="button"
-                            className="button--primary w-[400px] h-[50px] bg-white border-0  flex-center gap-3"
+                            className="button--primary h-[50px] w-[350px] min-w-0 sm:w-100  bg-white border-0  flex-center gap-3"
                         >
                             <FcGoogle className="text-xl" />
                             Continue with Google

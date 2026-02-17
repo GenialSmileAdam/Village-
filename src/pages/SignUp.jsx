@@ -198,7 +198,7 @@ export default function SignUp() {
                         <button
                             disabled={isSubmitting || successMessage}
                             type="submit"
-                            className="button--primary w-[400px] h-[50px]"
+                            className="button--primary h-[50px] w-[350px] min-w-0 sm:w-100 sm:min-w-85"
                         >
                             {isSubmitting ? "Creating Account..." : "Create Account"}
                         </button>

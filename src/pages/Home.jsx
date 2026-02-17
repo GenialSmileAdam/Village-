@@ -10,7 +10,7 @@ import { useAuth } from "../Context/AuthContext.jsx"; // Fixed import path
 function Hero(){
     const {user} = useAuth();
     return(
-        <section className="h-92.5 flex flex-col justify-center items-start gap-3 overflow-hidden lg:h-[90vh]">
+        <section className="h-92.5 relative flex flex-col justify-center items-start gap-3 overflow-hidden lg:h-[90vh]">
             <Head title="Home" />
 
             <div className="hero-gradient-bg"></div>
@@ -36,7 +36,7 @@ function Hero(){
 
 function About(){
     return(
-        <section id="about">
+        <section id="about" >
             <h2>About Village</h2>
             <div className="lg:flex justify-aroundt gap-3 lg:pt-5">
 

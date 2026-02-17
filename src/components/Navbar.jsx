@@ -100,7 +100,7 @@ function MobileMenu({ user, handleLogout }) {
                                 {!user && (
                                     <Link
                                         to="/signup"
-                                        className="button--primary w-full py-3 flex-center"
+                                        className="button--primary flex-center text-center"
                                     >
                                         Join a Village!
                                     </Link>

@@ -126,7 +126,7 @@
     .form_input> input{
         height: 40px;
         border-radius: 10px;
-        padding: 0px 1em;
+        padding: 0 1em;
     }
 
     .form_input> input[placeholder]{
@@ -138,7 +138,7 @@
 @layer components{
     .button--primary {
         background-color: var(--color-secondary);
-        padding: 11px 70px;
+        padding: 11px 60px;
         border-radius: var(--radius-button);
         border: black solid 1px;
         font-family: var(--font-secondary), serif;
